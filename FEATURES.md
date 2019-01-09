@@ -1,8 +1,8 @@
 # Twitch bot features
-- [ ] Scheduled messages
-	- [ ] Post message in scheduled intervals
-	- [ ] Set minimum lines between scheduled messages
-	- [ ] Allow messages to fire commands instead of or in addition to posting messages to chat
+- [x] Scheduled messages
+	- [x] Post message in scheduled intervals
+	- [x] Set minimum lines between scheduled messages
+	- [x] Allow messages to fire commands instead of or in addition to posting messages to chat
 - [ ] Chat moderation
 	- [ ] Links
 	- [ ] Excess emoji
@@ -19,18 +19,19 @@
 - [ ] Capture chat logs
 - [ ] Commands system
 	- [ ] Default commands
-		- [ ] !8ball - Requests an answer from the magic 8-ball
-		- [ ] !commands - List all current commands
-		- [ ] !marker - Creates a stream marker
-		- [ ] !poll - Creates a straw poll
+		- [x] !8ball - Requests an answer from the magic 8-ball
+		- [x] !commands - List all current commands
+		- [s] !marker - Creates a stream marker
+		- [x] !poll - Creates a straw poll
 		- [ ] !regulars - Allows moderation of regulars list
 			- [ ] !regulars add
 			- [ ] !regulars delete
-		- [ ] !title - Shows the stream title and allows moderators to modify it
-			- [ ] !title [NEW TITLE]
-		- [ ] !game - Shows the current game and allows moderators to modify it
-			- [ ] !game [NEW GAME]
-		- [ ] !uptime
+		- [x] !title - Shows the stream title and allows moderators to modify it
+			- [x] !title [NEW TITLE]
+		- [x] !game - Shows the current game and allows moderators to modify it
+			- [x] !game [NEW GAME]
+		- [x] !uptime
+		- [ ] !follow - Post a message with the name of another streamer and a reason to follow them
 	- [ ] Custom commands
 		- [ ] !donate - Links to donations page
 		- [ ] !social - Links to streamers social media
