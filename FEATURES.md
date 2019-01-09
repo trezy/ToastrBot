@@ -1,0 +1,42 @@
+# Twitch bot features
+- [ ] Scheduled messages
+	- [ ] Post message in scheduled intervals
+	- [ ] Set minimum lines between scheduled messages
+	- [ ] Allow messages to fire commands instead of or in addition to posting messages to chat
+- [ ] Chat moderation
+	- [ ] Links
+	- [ ] Excess emoji
+	- [ ] Excess caps lock usage
+	- [ ] Repetitive messages
+	- [ ] Chat word blacklist
+- [ ] Chat roles and permissions
+	- [ ] Integrations
+		- [ ] Twitch subs
+		- [ ] Patreon patrons
+		- [ ] Discord roles
+	- [ ] Regulars system
+		- [ ] Track who shows up the most
+- [ ] Capture chat logs
+- [ ] Commands system
+	- [ ] Default commands
+		- [ ] !8ball - Requests an answer from the magic 8-ball
+		- [ ] !commands - List all current commands
+		- [ ] !marker - Creates a stream marker
+		- [ ] !poll - Creates a straw poll
+		- [ ] !regulars - Allows moderation of regulars list
+			- [ ] !regulars add
+			- [ ] !regulars delete
+		- [ ] !title - Shows the stream title and allows moderators to modify it
+			- [ ] !title [NEW TITLE]
+		- [ ] !game - Shows the current game and allows moderators to modify it
+			- [ ] !game [NEW GAME]
+		- [ ] !uptime
+	- [ ] Custom commands
+		- [ ] !donate - Links to donations page
+		- [ ] !social - Links to streamers social media
+	- [ ] Command permission levels
+- [ ] Automatically update stream banner image
+- [ ] Support for code snippets
+	- [ ] Pastebin Integration
+	- [ ] Codepen Integration
+	- [ ] JSFiddle/JSBin integration
