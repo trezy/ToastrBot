@@ -3,7 +3,7 @@
 	- [x] Post message in scheduled intervals
 	- [x] Set minimum lines between scheduled messages
 	- [x] Allow messages to fire commands instead of or in addition to posting messages to chat
-- [ ] Chat moderation
+- [x] Chat moderation
 	- [x] Links
 	- [x] Excess emoji
 	- [x] Excess caps lock usage
