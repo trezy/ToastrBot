@@ -4,11 +4,12 @@
 	- [x] Set minimum lines between scheduled messages
 	- [x] Allow messages to fire commands instead of or in addition to posting messages to chat
 - [ ] Chat moderation
-	- [ ] Links
-	- [ ] Excess emoji
-	- [ ] Excess caps lock usage
-	- [ ] Repetitive messages
-	- [ ] Chat word blacklist
+	- [x] Links
+	- [x] Excess emoji
+	- [x] Excess caps lock usage
+	- [x] Repetitive messages
+	- [x] Chat word blacklist
+- [ ] Punishments system
 - [ ] Chat roles and permissions
 	- [ ] Integrations
 		- [ ] Twitch subs
@@ -16,6 +17,7 @@
 		- [ ] Discord roles
 	- [ ] Regulars system
 		- [ ] Track who shows up the most
+	- [ ] Ensure users that can't be moderated aren't
 - [ ] Capture chat logs
 - [ ] Commands system
 	- [ ] Default commands
@@ -31,6 +33,8 @@
 		- [x] !game - Shows the current game and allows moderators to modify it
 			- [x] !game [NEW GAME]
 		- [x] !uptime
+		- [ ] !permit - Allow user temporary permission to post things that are typically moderated
+			- [ ] !permit <user> <permission>
 		- [ ] !follow - Post a message with the name of another streamer and a reason to follow them
 	- [ ] Custom commands
 		- [ ] !donate - Links to donations page
