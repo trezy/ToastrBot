@@ -23,7 +23,7 @@
 	- [ ] Default commands
 		- [x] !8ball - Requests an answer from the magic 8-ball
 		- [x] !commands - List all current commands
-		- [s] !marker - Creates a stream marker
+		- [x] !marker - Creates a stream marker
 		- [x] !poll - Creates a straw poll
 		- [ ] !regulars - Allows moderation of regulars list
 			- [ ] !regulars add
