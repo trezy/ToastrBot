@@ -1,7 +1,16 @@
+// Module imports
 const { delay } = require('lodash')
 const fs = require('fs')
 const path = require('path')
 const TwitchJS = require('twitch-js')
+const uuid = require('uuid/v4')
+
+
+
+
+
+// Local imports
+const logger = require('./logger')
 
 
 
@@ -26,28 +35,47 @@ const twitchClient = new TwitchJS.client(options)
 
 async function handleCommand (commandFunction, messageData) {
   const { args, channel, command, userstate } = messageData
+  const logGroupID = uuid()
   let delayTime = 0
 
-  console.log(`${userstate['display-name']} is attempting to execute \`${command}\` in \`${channel}\`${args ? `with arguments: ${args}` : '' }`)
+  logger.info(`${userstate['display-name']} is attempting to execute \`${command}\` in \`${channel}\``, {
+    args,
+    channel,
+    command,
+    group: logGroupID,
+    user: userstate['display-name'],
+  })
 
   const result = await commandFunction(messageData)
 
-  for (const [key, value] of Object.entries(result)) {
-    let valueAsArray = value
+  if ((typeof result.success === 'undefined') || result.success) {
+    logger.info(`${userstate['display-name']}'s attempt to execute \`${command}\` in \`${channel}\` was succesful - executing command functions...`, {
+      group: logGroupID,
+      result,
+      success: true,
+    })
 
-    if (['action', 'say'].includes(key)) {
-      if (!Array.isArray(value)) {
-        valueAsArray = [value]
-      }
+    for (const [key, value] of Object.entries(result)) {
+      let valueAsArray = value
 
-      for (const item of valueAsArray) {
-        delay(() => twitchClient[key](channel, item), delayTime)
-        delayTime += 500
+      if (['action', 'say'].includes(key)) {
+        if (!Array.isArray(value)) {
+          valueAsArray = [value]
+        }
+
+        for (const item of valueAsArray) {
+          delay(() => twitchClient[key](channel, item), delayTime)
+          delayTime += 500
+        }
       }
     }
+  } else {
+    logger.info(`${userstate['display-name']}'s attempt to execute \`${command}\` in \`${channel}\` was unsuccesful`, {
+      group: logGroupID,
+      result,
+      success: false,
+    })
   }
-
-  // console.log(``)
 }
 
 
