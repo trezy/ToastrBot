@@ -1,0 +1,12 @@
+{
+  "name": "twitch-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:trezy/twitch-bot.git",
+  "author": "Trezy <tre@trezy.com>",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "twitch-js": "^1.2.17"
+  }
+}
