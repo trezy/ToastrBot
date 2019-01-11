@@ -3,6 +3,7 @@ const {
   format,
   transports,
 } = require('winston')
+require('winston-daily-rotate-file')
 const {
   combine: combineFormat,
   json: jsonFormat,
@@ -11,7 +12,7 @@ const {
 } = format
 const {
   Console: ConsoleTransport,
-  File: FileTransport,
+  DailyRotateFile: DailyRotateFileTransport,
 } = transports
 
 
@@ -32,20 +33,29 @@ function excludeLevels (levelsToExclude) {
 
 
 
+const fileTransportDefaultOptions = {
+  dirname: 'logs',
+  maxSize: '20m',
+  zippedArchive: true,
+}
+
+
+
+
+
 const logger = createLogger({
   level: (process.env.NODE_ENV === 'production') ? 'info' : 'silly',
   format: combineFormat(timestampFormat(), jsonFormat()),
-  defaultMeta: {
-    // service: 'user-service',
-  },
   transports: [
-    new FileTransport({
-      filename: 'error.log',
+    new DailyRotateFileTransport({
+      ...fileTransportDefaultOptions,
+      filename: '%DATE%-error.log',
       level: 'warn',
     }),
-    new FileTransport({
+    new DailyRotateFileTransport({
+      ...fileTransportDefaultOptions,
       format: combineFormat(excludeLevels(['error', 'warn']), timestampFormat(), jsonFormat()),
-      filename: 'info.log',
+      filename: '%DATE%-info.log',
     }),
     new ConsoleTransport(),
   ]
