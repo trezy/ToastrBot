@@ -104,6 +104,19 @@ function initialize () {
         logger.info(`Command \`${command.name}\` added`)
       })
 
+      commandsDatabaseRef.on('child_changed', snapshot => {
+        const command = snapshot.val()
+
+        channelCommands[command.name] = new Command({
+          firebase: firebaseAdmin,
+          name: command.name,
+          state: 'remote',
+          twitchClient,
+        }, () => command)
+
+        logger.info(`Command \`${command.name}\` added`)
+      })
+
       commandsDatabaseRef.on('child_removed', snapshot => {
         const command = snapshot.val()
 

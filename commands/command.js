@@ -21,7 +21,7 @@ module.exports = async function ({ args, channel, commands, userstate }, firebas
         subaction = commandMessage.shift()
       }
 
-      databaseRef.child(commandName).set({
+      await databaseRef.child(commandName).set({
         [subaction]: commandMessage.join(' '),
         name: commandName,
       })
@@ -47,8 +47,9 @@ module.exports = async function ({ args, channel, commands, userstate }, firebas
         subaction = commandMessage.shift()
       }
 
-      command = () => ({
-        [subaction]: commandMessage.join(' ')
+      await databaseRef.child(commandName).set({
+        [subaction]: commandMessage.join(' '),
+        name: commandName,
       })
 
       break
