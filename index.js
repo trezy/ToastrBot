@@ -114,7 +114,7 @@ function initialize () {
           twitchClient,
         }, () => command)
 
-        logger.info(`Command \`${command.name}\` added`)
+        logger.info(`Command \`${command.name}\` modified`)
       })
 
       commandsDatabaseRef.on('child_removed', snapshot => {

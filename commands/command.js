@@ -36,7 +36,7 @@ module.exports = async function ({ args, channel, commands, userstate }, firebas
         return response
       }
 
-      if (command.default) {
+      if (command.isDefault) {
         response.success = false
         response.say = `${username}: Cannot modify default commands.`
 
@@ -62,14 +62,14 @@ module.exports = async function ({ args, channel, commands, userstate }, firebas
         return response
       }
 
-      if (command.default) {
+      if (command.isDefault) {
         response.success = false
         response.say = `${username}: Cannot remove default commands.`
 
         return response
       }
 
-      if (command.remote) {
+      if (command.isRemote) {
         await databaseRef.child(commandName).remove()
       } else {
         delete command
