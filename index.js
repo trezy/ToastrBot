@@ -1,5 +1,6 @@
 // Module imports
 const { delay } = require('lodash')
+const firebaseAdmin = require('firebase-admin')
 const fs = require('fs')
 const path = require('path')
 const TwitchJS = require('twitch-js')
@@ -9,7 +10,9 @@ const uuid = require('uuid/v4')
 
 
 
+
 // Local imports
+const config = require('./config')
 const logger = require('./logger')
 
 
@@ -17,10 +20,10 @@ const logger = require('./logger')
 
 
 const options = {
-  channels: ['#trezycodes'],
+  channels: config.connectionOptions.defaultChannels,
   identity: {
-    username: 'trezycodes',
-    password: `oauth:${process.env.TWITCH_ACCESS_TOKEN}`,
+    username: config.apis.twitch.username,
+    password: config.apis.twitch.accessToken,
   },
   options: {
     clientID: process.env.TWITCH_CLIENT_ID,
@@ -43,10 +46,10 @@ async function handleCommand (commandFunction, messageData) {
     channel,
     command,
     group: logGroupID,
-    user: userstate['display-name'],
+    user: userstate.username,
   })
 
-  const result = await commandFunction(messageData)
+  const result = await commandFunction(messageData, firebaseAdmin)
 
   if ((typeof result.success === 'undefined') || result.success) {
     logger.info(`${userstate['display-name']}'s attempt to execute \`${command}\` in \`${channel}\` was succesful - executing command functions...`, {
@@ -54,6 +57,13 @@ async function handleCommand (commandFunction, messageData) {
       result,
       success: true,
     })
+  } else {
+    logger.info(`${userstate['display-name']}'s attempt to execute \`${command}\` in \`${channel}\` was unsuccesful`, {
+      group: logGroupID,
+      result,
+      success: false,
+    })
+  }
 
     for (const [key, value] of Object.entries(result)) {
       let valueAsArray = value
@@ -64,19 +74,17 @@ async function handleCommand (commandFunction, messageData) {
         }
 
         for (const item of valueAsArray) {
-          delay(() => twitchClient[key](channel, item), delayTime)
+        setTimeout(() => {
+          twitchClient[key](channel, item)
+        }, delayTime)
+
           delayTime += 500
         }
       }
     }
-  } else {
-    logger.info(`${userstate['display-name']}'s attempt to execute \`${command}\` in \`${channel}\` was unsuccesful`, {
-      group: logGroupID,
-      result,
-      success: false,
-    })
+
+  delay(() => logger.info(`Execution of command functions is complete`, { group: logGroupID }), delayTime)
   }
-}
 
 
 
@@ -90,21 +98,30 @@ function initialize () {
       const command = filename.replace(/\.js$/, '')
 
       accumulator[command] = require(path.resolve(commandsDirectory, command))
+      accumulator[command].default = true
     }
 
     return accumulator
-  }, {})
+  }, { channels: {} })
+
+  firebaseAdmin.initializeApp({
+    credential: firebaseAdmin.credential.cert(config.apis.firebase.credentials),
+    databaseURL: config.apis.firebase.url,
+  })
 
   twitchClient.on('chat', (channel, userstate, message, self) => {
     if (self) {
       return
     }
 
-    if (/^!/.test(message)) {
-      const [, command, args] = /^!(\w+) ?(.*)/.exec(message)
 
-      if (commands[command]) {
-        handleCommand(commands[command], {
+    if (/^!\w+/.test(message)) {
+      const safeChannelName = channel.replace(/^#/, '')
+      const [, command, args] = /^!(\w+) ?(.*)/.exec(message)
+      const commandFunction = commands[command] || commands.channels[safeChannelName][command]
+
+      if (commandFunction) {
+        handleCommand(commandFunction, {
           args,
           channel,
           command,
@@ -114,6 +131,35 @@ function initialize () {
           userstate,
         })
       }
+    }
+  })
+
+  twitchClient.on('join', (channel, username, self) => {
+    if (self) {
+      const safeChannelName = channel.replace(/^#/, '')
+      const commandsDatabaseRef = firebaseAdmin.database().ref(`${safeChannelName}/commands`)
+      let channelCommands = commands.channels[safeChannelName]
+
+      if (!channelCommands) {
+        channelCommands = commands.channels[safeChannelName] = {}
+      }
+
+      commandsDatabaseRef.on('child_added', snapshot => {
+        const command = snapshot.val()
+
+        channelCommands[command.name] = () => command
+        channelCommands[command.name].remote = true
+
+        logger.info(`Command \`${command.name}\` added`)
+      })
+
+      commandsDatabaseRef.on('child_removed', snapshot => {
+        const command = snapshot.val()
+
+        delete channelCommands[command.name]
+
+        logger.info(`Command \`${command.name}\` removed`)
+      })
     }
   })
 
