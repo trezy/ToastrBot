@@ -1,14 +1,17 @@
 module.exports = async function ({ args, channel, commands, userstate }, firebaseAdmin) {
   const [action, commandName, ...commandMessage] = args.split(' ')
   const response = { success: true }
+  const safeChannelName = channel.replace(/^#/, '')
   const username = `@${userstate['display-name']}`
   let subaction = 'say'
 
   const databaseRef = firebaseAdmin.database().ref(`${channel.replace(/^#/, '')}/commands`)
 
+  const command = commands[commandName] || commands.channels[safeChannelName][commandName]
+
   switch (action) {
     case 'add':
-      if (commands[commandName]) {
+      if (command) {
         response.success = false
         response.say = `${username}: Command already exists. Try \`!command modify <command>\` instead.`
         return response
@@ -26,14 +29,14 @@ module.exports = async function ({ args, channel, commands, userstate }, firebas
       break
 
     case 'modify':
-      if (!commands[commandName]) {
+      if (!command) {
         response.success = false
         response.say = `${username}: Command does not exist.`
 
         return response
       }
 
-      if (commands[commandName].default) {
+      if (command.default) {
         response.success = false
         response.say = `${username}: Cannot modify default commands.`
 
@@ -44,31 +47,31 @@ module.exports = async function ({ args, channel, commands, userstate }, firebas
         subaction = commandMessage.shift()
       }
 
-      commands[commandName] = () => ({
+      command = () => ({
         [subaction]: commandMessage.join(' ')
       })
 
       break
 
     case 'remove':
-      if (!commands[commandName]) {
+      if (!command) {
         response.success = false
         response.say = `${username}: Command does not exist.`
 
         return response
       }
 
-      if (commands[commandName].default) {
+      if (command.default) {
         response.success = false
         response.say = `${username}: Cannot remove default commands.`
 
         return response
       }
 
-      if (commands[commandName].remote) {
+      if (command.remote) {
         await databaseRef.child(commandName).remove()
       } else {
-        delete commands[commandName]
+        delete command
       }
 
       break
