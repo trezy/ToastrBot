@@ -1,7 +1,4 @@
-module.exports = function ({
-  args,
-  userstate,
-}) {
+export default ({ args, userstate }) => {
   const username = `@${userstate['display-name']}`
   const fortunes = [
     'It is certain, .',

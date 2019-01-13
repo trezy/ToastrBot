@@ -1,6 +1,6 @@
-module.exports = async function ({ channel, commands }) {
+export default async ({ bot, channel, commands }) => {
   const safeChannelName = channel.replace(/^#/, '')
-  const channelCommands = commands.channels[safeChannelName]
+  const channelCommands = bot.channels[safeChannelName].commands
   let commandList = Object.keys(commands).filter(key => key !== 'channels')
 
   commandList = commandList.concat(Object.keys(channelCommands))

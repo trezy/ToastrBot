@@ -1,14 +1,13 @@
 // Module imports
-const path = require('path')
-const uuid = require('uuid/v4')
+import path from 'path'
+import uuid from 'uuid/v4'
 
 
 
 
 
 // Local imports
-const logger = require('../logger')
-const appDirectory = path.dirname(require.main.filename)
+import logger from '../logger'
 
 
 
@@ -39,10 +38,6 @@ class Command {
 
     const result = await this.commandFunction(messageData, this.firebase)
 
-    console.log('')
-    console.log('RESULT:', result)
-    console.log('')
-
     if ((typeof result.success === 'undefined') || result.success) {
       logger.info(`${userstate['display-name']}'s attempt to execute \`${commandName}\` in \`${channel}\` was succesful - executing command functions...`, {
         group: logGroupID,
@@ -67,7 +62,7 @@ class Command {
 
         for (const item of valueAsArray) {
           setTimeout(() => {
-            this.twitchClient[key](channel, item)
+            this.twitch[key](channel, item)
           }, delayTime)
 
           delayTime += 500
@@ -95,7 +90,7 @@ class Command {
       name: null,
       state: 'default',
       firebase: null,
-      twitchClient: null,
+      twitch: null,
     }
   }
 
@@ -119,8 +114,12 @@ class Command {
     return this._options || this.defaultOptions
   }
 
-  get twitchClient () {
-    return this.options.twitchClient
+  get state () {
+    return this.options.state
+  }
+
+  get twitch () {
+    return this.options.twitch
   }
 
 
@@ -135,7 +134,7 @@ class Command {
     if (value) {
       this._commandFunction = value
     } else {
-      this._commandFunction = require(path.resolve(appDirectory, 'commands', this.name))
+      this._commandFunction = require(path.resolve(__dirname, '..', 'commands', this.name)).default
     }
   }
 
@@ -151,4 +150,4 @@ class Command {
 
 
 
-module.exports = Command
+export default Command

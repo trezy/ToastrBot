@@ -1,11 +1,4 @@
-module.exports = function ({
-  args,
-  channel,
-  command,
-  message,
-  self,
-  userstate,
-}) {
+export default ({ args, userstate }) => {
   const response = {}
 
   if (/^order/.test(args)) {

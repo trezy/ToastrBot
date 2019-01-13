@@ -1,9 +1,15 @@
-const {
+// Module imports
+import {
   createLogger,
   format,
   transports,
-} = require('winston')
-require('winston-daily-rotate-file')
+} from 'winston'
+import 'winston-daily-rotate-file'
+
+
+
+
+
 const {
   combine: combineFormat,
   json: jsonFormat,

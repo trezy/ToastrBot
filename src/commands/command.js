@@ -1,13 +1,12 @@
-module.exports = async function ({ args, channel, commands, userstate }, firebaseAdmin) {
+export default async ({ args, bot, channel, commands, userstate }, firebase) => {
   const [action, commandName, ...commandMessage] = args.split(' ')
   const response = { success: true }
-  const safeChannelName = channel.replace(/^#/, '')
   const username = `@${userstate['display-name']}`
   let subaction = 'say'
 
-  const databaseRef = firebaseAdmin.database().ref(`${channel.replace(/^#/, '')}/commands`)
+  const databaseRef = bot.database.ref(`${channel.replace(/^#/, '')}/commands`)
 
-  const command = commands[commandName] || commands.channels[safeChannelName][commandName]
+  const command = commands[commandName] || bot.getChannel(channel).commands[commandName]
 
   switch (action) {
     case 'add':
@@ -69,11 +68,7 @@ module.exports = async function ({ args, channel, commands, userstate }, firebas
         return response
       }
 
-      if (command.isRemote) {
-        await databaseRef.child(commandName).remove()
-      } else {
-        delete command
-      }
+      await databaseRef.child(commandName).remove()
 
       break
   }
