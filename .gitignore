@@ -1,5 +1,6 @@
 .env
 firebase-credentials.json
-node_modules
 yarn.lock
-logs
+dist/
+node_modules/
+logs/
