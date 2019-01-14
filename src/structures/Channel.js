@@ -84,6 +84,8 @@ class Channel {
     this.options = options
 
     this._bindFirebaseEvents()
+
+    this._bindTwitchEvents()
   }
 
   handleMessage = () => {}

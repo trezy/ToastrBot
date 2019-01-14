@@ -35,11 +35,10 @@ class Bot {
       return
     }
 
-    if (/^!\w+/.test(message)) {
+    if (this.commandRegex.test(message)) {
       const safeChannelName = channel.replace(/^#/, '')
-      const [, commandName, args] = /^!(\w+) ?(.*)/.exec(message)
+      const [, commandName, args] = this.commandRegex.exec(message)
       const command = this.commands[commandName] || this.channels[safeChannelName].commands[commandName]
-
 
       if (command) {
         command.execute({
@@ -106,6 +105,10 @@ class Bot {
 
   get channelsRef () {
     return this._channelsRef || (this._channelsRef = this.database.ref('channels'))
+  }
+
+  get commandRegex () {
+    return /^!([\w\d_-]+)/
   }
 
   get database () {

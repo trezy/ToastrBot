@@ -39,13 +39,13 @@ class Command {
     const result = await this.commandFunction(messageData, this.firebase)
 
     if ((typeof result.success === 'undefined') || result.success) {
-      logger.info(`${userstate['display-name']}'s attempt to execute \`${commandName}\` in \`${channel}\` was succesful - executing command functions...`, {
+      logger.info(`${userstate['display-name']}'s attempt to execute \`${commandName}\` in \`${channel}\` was successful - executing command functions...`, {
         group: logGroupID,
         result,
         success: true,
       })
     } else {
-      logger.info(`${userstate['display-name']}'s attempt to execute \`${commandName}\` in \`${channel}\` was unsuccesful`, {
+      logger.info(`${userstate['display-name']}'s attempt to execute \`${commandName}\` in \`${channel}\` was unsuccessful`, {
         group: logGroupID,
         result,
         success: false,
