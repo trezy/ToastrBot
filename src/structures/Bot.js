@@ -40,6 +40,8 @@ class Bot {
       const [, commandName, args] = this.commandRegex.exec(message)
       const command = this.commands[commandName] || this.channels[safeChannelName].commands[commandName]
 
+      console.log('message', message)
+
       if (command) {
         command.execute({
           args,
@@ -108,7 +110,7 @@ class Bot {
   }
 
   get commandRegex () {
-    return /^!([\w\d_-]+)/
+    return /^!([\w\d_-]+)\s?(.*)/
   }
 
   get database () {
