@@ -113,7 +113,9 @@ class Channel {
     this._bindTwitchEvents()
   }
 
-  handleMessage = () => {}
+  getModerators = async () => {
+    return await this.twitch.mods(this.name)
+  }
 
   join = async () => {
     await this.twitch.join(this.name)
