@@ -30,6 +30,7 @@ class Channel {
   }
 
   _bindTwitchEvents () {
+    this.twitch.on('chat', this._handleMessage)
     this.twitch.on('join', this._handleChannelJoin)
   }
 
@@ -46,8 +47,8 @@ class Channel {
     logger.info(`Command \`${snapshot.key}\` modified`)
   }
 
-  _handleChannelJoin = (channel, username, self) => {
-    if (self && (channel.replace(/^#/, '') === this.name)) {
+  _handleChannelJoin = (channelName, username, self) => {
+    if (self && (channelName === this.name)) {
       // this.twitch.off('join', this._handleChannelJoin)
       this.state = 'connected'
     }
@@ -57,6 +58,30 @@ class Channel {
     delete this.commands[snapshot.key]
 
     logger.info(`Command \`${snapshot.key}\` removed`)
+  }
+
+  _handleMessage = (channelName, userstate, message, self) => {
+    if (self || channelName !== this.name) {
+      return
+    }
+
+    if (this.commandRegex.test(message)) {
+      const [, commandName, args] = this.commandRegex.exec(message)
+      const command = this.commands[commandName]
+
+      if (command) {
+        command.execute({
+          args,
+          bot: this.bot,
+          channel: this,
+          commandName,
+          commands: this.commands,
+          message,
+          self,
+          userstate,
+        })
+      }
+    }
   }
 
   _handleNewCommand = snapshot => {
@@ -91,7 +116,7 @@ class Channel {
   handleMessage = () => {}
 
   join = async () => {
-    await this.twitch.join(`#${this.name}`)
+    await this.twitch.join(this.name)
   }
 
 
@@ -106,8 +131,27 @@ class Channel {
     return this.options.bot
   }
 
+  get commands () {
+    if (!this._commands) {
+      this._commands = {}
+    }
+
+    return new Proxy({
+      ...this.bot.commands,
+      ...this._commands,
+    }, {
+      set: (obj, prop, value) => {
+        return Reflect.set(this._commands, prop, value)
+      }
+    })
+  }
+
   get commandsRef () {
     return this._commandsRef || (this._commandsRef = this.databaseRef.child('commands'))
+  }
+
+  get commandRegex () {
+    return /^!([\w\d_-]+)\s?(.*)/
   }
 
   get database () {
@@ -115,15 +159,11 @@ class Channel {
   }
 
   get databaseRef () {
-    return this._databaseRef || (this._databaseRef = this.database.ref(this.name))
+    return this._databaseRef || (this._databaseRef = this.database.ref(this.safeName))
   }
 
   get defaultOptions () {
-    return {
-      name: null,
-      firebase: null,
-      twitchClient: null,
-    }
+    return { name: null }
   }
 
   get state () {
@@ -131,7 +171,7 @@ class Channel {
   }
 
   get firebase () {
-    return this.options.firebase
+    return this.bot.firebase
   }
 
   get name () {
@@ -142,8 +182,12 @@ class Channel {
     return this._options || this.defaultOptions
   }
 
+  get safeName () {
+    return this.name.replace(/^#/, '')
+  }
+
   get twitch () {
-    return this.options.twitch
+    return this.bot.twitch
   }
 
 

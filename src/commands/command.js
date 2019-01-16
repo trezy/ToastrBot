@@ -1,12 +1,12 @@
-export default async ({ args, bot, channel, commands, userstate }, firebase) => {
+export default async ({ args, bot, channel, commands, userstate }) => {
   const [action, commandName, ...commandMessage] = args.split(' ')
   const response = { success: true }
   const username = `@${userstate['display-name']}`
   let subaction = 'say'
 
-  const databaseRef = bot.database.ref(`${channel.replace(/^#/, '')}/commands`)
+  const databaseRef = bot.database.ref(`${channel.safeName}/commands`)
 
-  const command = commands[commandName] || bot.getChannel(channel).commands[commandName]
+  const command = commands[commandName]
 
   switch (action) {
     case 'add':

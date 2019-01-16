@@ -26,44 +26,12 @@ class Bot {
     this.channelsRef.on('child_added', ({ key }) => this._handleNewChannel(key))
   }
 
-  _bindTwitchEvents () {
-    this.twitch.on('chat', this._handleMessage)
-  }
-
-  _handleMessage = (channel, userstate, message, self) => {
-    if (self) {
-      return
-    }
-
-    if (this.commandRegex.test(message)) {
-      const safeChannelName = channel.replace(/^#/, '')
-      const [, commandName, args] = this.commandRegex.exec(message)
-      const command = this.commands[commandName] || this.channels[safeChannelName].commands[commandName]
-
-      console.log('message', message)
-
-      if (command) {
-        command.execute({
-          args,
-          bot: this,
-          channel,
-          commandName,
-          commands: this.commands,
-          message,
-          self,
-          userstate,
-        })
-      }
-    }
-  }
-
   _handleNewChannel = async channelName => {
     logger.info(`New channel added: ${channelName}`)
 
     this.channels[channelName] = new Channel({
-      firebase: this.firebase,
-      name: channelName,
-      twitch: this.twitch,
+      bot: this,
+      name: `#${channelName}`,
     })
 
     await this.channels[channelName].join()
@@ -84,13 +52,7 @@ class Bot {
 
     this._bindFirebaseEvents()
 
-    this._bindTwitchEvents()
-
     twitch.connect()
-  }
-
-  getChannel = channelName => {
-    return this.channels[channelName.replace(/^#/, '')]
   }
 
 
@@ -107,10 +69,6 @@ class Bot {
 
   get channelsRef () {
     return this._channelsRef || (this._channelsRef = this.database.ref('channels'))
-  }
-
-  get commandRegex () {
-    return /^!([\w\d_-]+)\s?(.*)/
   }
 
   get database () {
