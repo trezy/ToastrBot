@@ -16,7 +16,6 @@ import config from './config'
 
 
 const twitchClient = new TwitchJS.client({
-  channels: config.connectionOptions.defaultChannels,
   identity: {
     username: config.apis.twitch.username,
     password: config.apis.twitch.accessToken,

@@ -29,12 +29,5 @@ module.exports = {
     },
   },
 
-  connectionOptions: {
-    defaultChannels: [
-      // '#mr_highway',
-      // '#satan3',
-      '#trezycodes',
-      // '#zebisgeckos',
-    ],
-  },
+  connectionOptions: {},
 }
