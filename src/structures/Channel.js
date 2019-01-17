@@ -84,6 +84,7 @@ class Channel {
       return
     }
 
+    const safeMessage = message.toLowerCase()
     let user = this.users[userstate.username]
 
     if (user) {
@@ -93,8 +94,8 @@ class Channel {
       this.users[userstate.username] = user
     }
 
-    if (this.commandRegex.test(message)) {
-      const [, commandName, args] = this.commandRegex.exec(message)
+    if (this.commandRegex.test(safeMessage)) {
+      const [, commandName, args] = this.commandRegex.exec(safeMessage)
       const command = this.commands[commandName]
 
       if (command) {
@@ -105,7 +106,7 @@ class Channel {
             channel: this,
             commandName,
             commands: this.commands,
-            message,
+            message: safeMessage,
             self,
             user,
           })
