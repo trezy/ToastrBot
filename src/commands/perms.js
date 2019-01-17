@@ -20,6 +20,12 @@ export default async ({ args, bot, channel, user }) => {
       break
 
     case 'list':
+      if (!channelPermissions) {
+        response.say = `${user.atName}: This channel doesn't have any permissions restrictions.`
+
+        return response
+      }
+
       const forkedPermissions = channelPermissions.reduce((accumulator, item) => {
         if (config.roles.includes(item)) {
           accumulator.roles.push(item)
