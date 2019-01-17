@@ -220,7 +220,7 @@ class Channel {
   }
 
   get commandRegex () {
-    return new RegExp(`^(?:${this.prefixes.join('|')})([\\w\\d_-]+)\\s?(.*)`)
+    return new RegExp(`^(?:${this.prefixes.join('|')})([\\w\\d_-]+)\\s?(.*)`, 'i')
   }
 
   get database () {
