@@ -21,7 +21,7 @@ const twitchClient = new TwitchJS.client({
     password: config.apis.twitch.accessToken,
   },
   options: {
-    clientID: process.env.TWITCH_CLIENT_ID,
+    clientID: config.apis.twitch.clientID,
   },
 })
 

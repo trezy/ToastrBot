@@ -25,6 +25,7 @@ module.exports = {
     },
     twitch: {
       accessToken: process.env.TOASTR_TWITCH_OAUTH_TOKEN,
+      clientID: process.env.TWITCH_CLIENT_ID,
       username: process.env.TOASTR_TWITCH_USERNAME,
     },
   },
