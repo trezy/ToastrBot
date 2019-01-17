@@ -14,6 +14,8 @@ class Channel {
 
   permissions = {}
 
+  prefixes = ['!', '@Toastr_Bot ']
+
 
 
 
@@ -23,7 +25,7 @@ class Channel {
   \***************************************************************************/
 
   _bindFirebaseEvents () {
-    this.commandsRef.on('child_added', this._handleNewCommand)
+    this.prefixesRef.on('value', this._handlePrefixesChange)
 
     this.commandsRef.on('child_added', this._handleNewCommand)
     this.commandsRef.on('child_changed', this._handleChangedCommand)
@@ -97,16 +99,16 @@ class Channel {
 
       if (command) {
         if (this._userIsPermittedToRunCommand(user, command)) {
-        command.execute({
-          args,
-          bot: this.bot,
-          channel: this,
-          commandName,
-          commands: this.commands,
-          message,
-          self,
+          command.execute({
+            args,
+            bot: this.bot,
+            channel: this,
+            commandName,
+            commands: this.commands,
+            message,
+            self,
             user,
-        })
+          })
         } else {
           this.twitch.say(this.name, `Sorry, ${user.atName}, you're not permitted to use the \`${command.name}\` command`)
         }
@@ -133,6 +135,11 @@ class Channel {
     logger.info(`Permissions have been set for \`${snapshot.key}\` command`)
   }
 
+  _handlePrefixesChange = snapshot => {
+    this.prefixes = snapshot.val()
+
+    logger.info(`Prefixes for ${this.name} updated: ${this.prefixes.join(', ')}`)
+  }
 
   _userIsPermittedToRunCommand (user, command) {
     const commandPermissions = this.permissions[command.name]
@@ -189,6 +196,10 @@ class Channel {
     return this.options.bot
   }
 
+  get chatLogRef () {
+    return this._chatLogRef || (this._chatLogRef = this.databaseRef.child('chat-log'))
+  }
+
   get commands () {
     if (!this._commands) {
       this._commands = {}
@@ -209,7 +220,7 @@ class Channel {
   }
 
   get commandRegex () {
-    return /^!([\w\d_-]+)\s?(.*)/
+    return new RegExp(`^(?:${this.prefixes.join('|')})([\\w\\d_-]+)\\s?(.*)`)
   }
 
   get database () {
@@ -238,6 +249,10 @@ class Channel {
 
   get permissionsRef () {
     return this._permissionsRef || (this._permissionsRef = this.databaseRef.child('permissions'))
+  }
+
+  get prefixesRef () {
+    return this._prefixesRef || (this._prefixesRef = this.databaseRef.child('prefixes'))
   }
 
   get safeName () {
