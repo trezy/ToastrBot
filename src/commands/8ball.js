@@ -1,4 +1,5 @@
 export default ({ args, user }) => {
+  const response = { success: true }
   const fortunes = [
     'It is certain, .',
     'It is decidedly so.',
@@ -21,13 +22,13 @@ export default ({ args, user }) => {
     'Outlook not so good.',
     'Very doubtful.',
   ]
-  let response = `I'm sorry, ${user.atName}, but you must provide a query for the magic 8-ball to respond.`
 
   if (args) {
-    response = `${user.atName}: ${fortunes[Math.floor(Math.random() * fortunes.length)]}`
+    response.say = `${user.atName}: ${fortunes[Math.floor(Math.random() * fortunes.length)]}`
+  } else {
+    response.say = `I'm sorry, ${user.atName}, but you must provide a query for the magic 8-ball to respond.`
+    response.success = false
   }
 
-  return {
-    say: response,
-  }
+  return response
 }
