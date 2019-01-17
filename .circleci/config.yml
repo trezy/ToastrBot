@@ -143,7 +143,7 @@ jobs:
 
       - run:
           name: Deploy to dev server
-          command: rsync -r --exclude=logs --delete-after --quiet ~/app/ $DEV_DEPLOY_USER@$DEV_DEPLOY_HOST:$DEV_DEPLOY_FOLDER
+          command: rsync -r --exclude=logs --exclude=.env --exclude=firebase-credentials.json --delete-after --quiet ~/app/ $DEV_DEPLOY_USER@$DEV_DEPLOY_HOST:$DEV_DEPLOY_FOLDER
 
   prod-deploy:
     <<: *defaults
@@ -160,7 +160,7 @@ jobs:
 
       - run:
           name: Deploy to dev server
-          command: rsync -r --exclude=logs --delete-after --quiet ~/app/ $PROD_DEPLOY_USER@$PROD_DEPLOY_HOST:$PROD_DEPLOY_FOLDER
+          command: rsync -r --exclude=logs --exclude=.env --exclude=firebase-credentials.json --delete-after --quiet ~/app/ $PROD_DEPLOY_USER@$PROD_DEPLOY_HOST:$PROD_DEPLOY_FOLDER
 
 
 
