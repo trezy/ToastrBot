@@ -225,4 +225,4 @@ class Channel {
 
 
 
-module.exports = Channel
+export default Channel
