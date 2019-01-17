@@ -1,4 +1,4 @@
-export default ({ args, user }) => {
+export default async ({ args, user }) => {
   const response = { success: true }
   const fortunes = [
     'It is certain, .',

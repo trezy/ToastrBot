@@ -4,10 +4,8 @@ import { expect } from 'chai'
 
 
 
-import '../mocks/requires/firebase-credentials.mock'
 import command from '../../src/commands/8ball'
-import User from '../../src/structures/User'
-import userstate from '../mocks/userstate.mock'
+import commandData from '../mocks/commandData.mock'
 import sharedTests from './shared.test'
 
 
@@ -18,11 +16,8 @@ describe('!8ball', function () {
   sharedTests(command)
 
   describe('with a query', function () {
-    beforeEach(function () {
-      this.result = command({
-        args: 'Will I ever fall in love?',
-        user: new User(userstate),
-      })
+    beforeEach(async function () {
+      return this.result = await command(commandData({ args: 'Will I ever fall in love?' }))
     })
 
     it('should succeed', function () {
@@ -31,11 +26,8 @@ describe('!8ball', function () {
   })
 
   describe('without a query', function () {
-    beforeEach(function () {
-      this.result = command({
-        args: '',
-        user: new User(userstate),
-      })
+    beforeEach(async function () {
+      return this.result = await command(commandData({ args: '' }))
     })
 
     it('should fail', function () {
