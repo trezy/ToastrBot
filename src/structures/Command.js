@@ -24,28 +24,28 @@ class Command {
   }
 
   async execute (messageData) {
-    const { args, channel, commandName, userstate } = messageData
+    const { args, channel, commandName, user } = messageData
     const logGroupID = uuid()
     let delayTime = 0
 
-    logger.info(`${userstate['display-name']} is attempting to execute \`${commandName}\` in \`${channel.name}\``, {
+    logger.info(`${user.atName} is attempting to execute \`${commandName}\` in \`${channel.name}\``, {
       args,
       channel: channel.name,
       commandName,
       group: logGroupID,
-      user: userstate.username,
+      user: user.name,
     })
 
     const result = await this.commandFunction(messageData, this.firebase)
 
     if ((typeof result.success === 'undefined') || result.success) {
-      logger.info(`${userstate['display-name']}'s attempt to execute \`${commandName}\` in \`${channel.name}\` was successful - executing command functions...`, {
+      logger.info(`${user.atName}'s attempt to execute \`${commandName}\` in \`${channel.name}\` was successful - executing command functions...`, {
         group: logGroupID,
         result,
         success: true,
       })
     } else {
-      logger.info(`${userstate['display-name']}'s attempt to execute \`${commandName}\` in \`${channel.name}\` was unsuccessful`, {
+      logger.info(`${user.atName}'s attempt to execute \`${commandName}\` in \`${channel.name}\` was unsuccessful`, {
         group: logGroupID,
         result,
         success: false,

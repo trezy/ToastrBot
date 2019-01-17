@@ -31,4 +31,14 @@ module.exports = {
   },
 
   connectionOptions: {},
+
+  roles: [
+    'broadcaster',
+    'editor',
+    'moderator',
+    'vip',
+    'subscriber',
+    'follower',
+    'regular',
+  ],
 }

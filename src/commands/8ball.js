@@ -1,5 +1,4 @@
-export default ({ args, userstate }) => {
-  const username = `@${userstate['display-name']}`
+export default ({ args, user }) => {
   const fortunes = [
     'It is certain, .',
     'It is decidedly so.',
@@ -22,10 +21,10 @@ export default ({ args, userstate }) => {
     'Outlook not so good.',
     'Very doubtful.',
   ]
-  let response = `I'm sorry, ${username}, but you must provide a query for the magic 8-ball to respond.`
+  let response = `I'm sorry, ${user.atName}, but you must provide a query for the magic 8-ball to respond.`
 
   if (args) {
-    response = `${username}: ${fortunes[Math.floor(Math.random() * fortunes.length)]}`
+    response = `${user.atName}: ${fortunes[Math.floor(Math.random() * fortunes.length)]}`
   }
 
   return {

@@ -1,7 +1,6 @@
-export default async ({ args, bot, channel, commands, userstate }) => {
+export default async ({ args, bot, channel, commands, user }) => {
   const [action, commandName, ...commandMessage] = args.split(' ')
   const response = { success: true }
-  const username = `@${userstate['display-name']}`
   let subaction = 'say'
 
   const databaseRef = bot.database.ref(`${channel.safeName}/commands`)
@@ -12,7 +11,7 @@ export default async ({ args, bot, channel, commands, userstate }) => {
     case 'add':
       if (command) {
         response.success = false
-        response.say = `${username}: Command already exists. Try \`!command modify <command>\` instead.`
+        response.say = `${user.atName}: Command already exists. Try \`${channel.prefix[0]}command modify <command>\` instead.`
         return response
       }
 
@@ -30,14 +29,14 @@ export default async ({ args, bot, channel, commands, userstate }) => {
     case 'modify':
       if (!command) {
         response.success = false
-        response.say = `${username}: Command does not exist.`
+        response.say = `${user.atName}: Command does not exist.`
 
         return response
       }
 
       if (command.isDefault) {
         response.success = false
-        response.say = `${username}: Cannot modify default commands.`
+        response.say = `${user.atName}: Cannot modify default commands.`
 
         return response
       }
@@ -56,14 +55,14 @@ export default async ({ args, bot, channel, commands, userstate }) => {
     case 'remove':
       if (!command) {
         response.success = false
-        response.say = `${username}: Command does not exist.`
+        response.say = `${user.atName}: Command does not exist.`
 
         return response
       }
 
       if (command.isDefault) {
         response.success = false
-        response.say = `${username}: Cannot remove default commands.`
+        response.say = `${user.atName}: Cannot remove default commands.`
 
         return response
       }

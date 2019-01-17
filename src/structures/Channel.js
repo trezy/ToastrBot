@@ -65,6 +65,15 @@ class Channel {
       return
     }
 
+    let user = this.users[userstate.username]
+
+    if (user) {
+      user.update(userstate)
+    } else {
+      user = new User(userstate)
+      this.users[userstate.username] = user
+    }
+
     if (this.commandRegex.test(message)) {
       const [, commandName, args] = this.commandRegex.exec(message)
       const command = this.commands[commandName]
@@ -78,7 +87,7 @@ class Channel {
           commands: this.commands,
           message,
           self,
-          userstate,
+            user,
         })
       }
     }
@@ -190,6 +199,10 @@ class Channel {
 
   get twitch () {
     return this.bot.twitch
+  }
+
+  get users () {
+    return this._users || (this._users = {})
   }
 
 
