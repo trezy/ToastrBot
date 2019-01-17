@@ -1,6 +1,7 @@
 // Local imports
 import Command from './Command'
 import logger from '../logger'
+import User from './User'
 
 
 
@@ -11,7 +12,7 @@ class Channel {
     Local Properties
   \***************************************************************************/
 
-  commands = {}
+  permissions = {}
 
 
 
@@ -24,9 +25,13 @@ class Channel {
   _bindFirebaseEvents () {
     this.commandsRef.on('child_added', this._handleNewCommand)
 
+    this.commandsRef.on('child_added', this._handleNewCommand)
     this.commandsRef.on('child_changed', this._handleChangedCommand)
-
     this.commandsRef.on('child_removed', this._handleDeletedCommand)
+
+    this.permissionsRef.on('child_added', this._handleNewPermission)
+    this.permissionsRef.on('child_changed', this._handleChangedPermission)
+    this.permissionsRef.on('child_removed', this._handleDeletedPermission)
   }
 
   _bindTwitchEvents () {
@@ -47,6 +52,12 @@ class Channel {
     logger.info(`Command \`${snapshot.key}\` modified`)
   }
 
+  _handleChangedPermission = snapshot => {
+    this.permissions[snapshot.key] = snapshot.val()
+
+    logger.info(`Permissions for \`${snapshot.key}\` command have been modified`)
+  }
+
   _handleChannelJoin = (channelName, username, self) => {
     if (self && (channelName === this.name)) {
       // this.twitch.off('join', this._handleChannelJoin)
@@ -58,6 +69,12 @@ class Channel {
     delete this.commands[snapshot.key]
 
     logger.info(`Command \`${snapshot.key}\` removed`)
+  }
+
+  _handleDeletedPermission = snapshot => {
+    delete this.permissions[snapshot.key]
+
+    logger.info(`Permissions for command \`${snapshot.key}\` have been removed`)
   }
 
   _handleMessage = (channelName, userstate, message, self) => {
@@ -79,6 +96,7 @@ class Channel {
       const command = this.commands[commandName]
 
       if (command) {
+        if (this._userIsPermittedToRunCommand(user, command)) {
         command.execute({
           args,
           bot: this.bot,
@@ -89,6 +107,9 @@ class Channel {
           self,
             user,
         })
+        } else {
+          this.twitch.say(this.name, `Sorry, ${user.atName}, you're not permitted to use the \`${command.name}\` command`)
+        }
       }
     }
   }
@@ -104,6 +125,32 @@ class Channel {
     }, () => command)
 
     logger.info(`Command \`${snapshot.key}\` added for channel ${this.name}`)
+  }
+
+  _handleNewPermission = snapshot => {
+    this.permissions[snapshot.key] = snapshot.val()
+
+    logger.info(`Permissions have been set for \`${snapshot.key}\` command`)
+  }
+
+
+  _userIsPermittedToRunCommand (user, command) {
+    const commandPermissions = this.permissions[command.name]
+
+    if (!commandPermissions || commandPermissions.includes(user.name)) {
+      return true
+    }
+
+    let result = false
+
+    for (const role of commandPermissions) {
+      if (user.roles.includes(role)) {
+        result = true
+        break
+      }
+    }
+
+    return result
   }
 
 
@@ -177,10 +224,6 @@ class Channel {
     return { name: null }
   }
 
-  get state () {
-    return this._state || (this._state = 'disconnected')
-  }
-
   get firebase () {
     return this.bot.firebase
   }
@@ -193,8 +236,16 @@ class Channel {
     return this._options || this.defaultOptions
   }
 
+  get permissionsRef () {
+    return this._permissionsRef || (this._permissionsRef = this.databaseRef.child('permissions'))
+  }
+
   get safeName () {
     return this.name.replace(/^#/, '')
+  }
+
+  get state () {
+    return this._state || (this._state = 'disconnected')
   }
 
   get twitch () {
