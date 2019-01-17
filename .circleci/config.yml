@@ -80,10 +80,6 @@ jobs:
             - build-
 
       - run:
-          name: Add Yarn Binary Folder To $PATH
-          command: export PATH="$PATH:`yarn global bin`"
-
-      - run:
           name: Build the Application
           command: yarn run build
 
@@ -98,20 +94,16 @@ jobs:
           paths:
             - dist
 
-  # test:
-  #   <<: *defaults
+  test:
+    <<: *defaults
 
-  #   steps:
-  #     - attach_workspace:
-  #         at: .
+    steps:
+      - attach_workspace:
+          at: .
 
-  #     - run:
-  #         name: Add Yarn Binary Folder To $PATH
-  #         command: export PATH="$PATH:`yarn global bin`"
-
-  #     - run:
-  #         name: Run tests
-  #         command: yarn test
+      - run:
+          name: Run tests
+          command: yarn test
 
   # coverage:
   #   <<: *defaults
@@ -175,9 +167,9 @@ workflows:
       - install-dependencies:
           requires:
             - checkout
-      # - test:
-      #     requires:
-      #       - install-dependencies
+      - test:
+          requires:
+            - install-dependencies
       # - coverage:
       #     requires:
       #       - install-dependencies
@@ -191,14 +183,14 @@ workflows:
                 - develop
       - dev-deploy:
           requires:
-            # - test
+            - test
             - build
           filters:
             branches:
               only: develop
       - prod-deploy:
           requires:
-            # - test
+            - test
             - build
           filters:
             branches:
