@@ -4,6 +4,7 @@ import { expect } from 'chai'
 
 
 
+import '../mocks/requires/firebase-credentials.mock'
 import command from '../../src/commands/8ball'
 import User from '../../src/structures/User'
 import userstate from '../mocks/userstate.mock'
