@@ -1,5 +1,4 @@
 // Modules imports
-import fs from 'fs'
 import path from 'path'
 
 
@@ -8,25 +7,22 @@ import path from 'path'
 
 // Local imports
 import Command from '../structures/Command'
+import getFilesByType from '../helpers/getFilesByType'
 
 
 
 
 
 export default function ({ firebase, twitch }) {
-  const commandsDirectoryContents = fs.readdirSync(path.resolve(__dirname, '..', 'commands'))
+  const commands = getFilesByType('.js', path.resolve(__dirname, '..', 'commands'))
 
-  return commandsDirectoryContents.reduce((accumulator, filename) => {
-    if (/\.js$/.test(filename)) {
-      const commandName = filename.replace(/\.js$/, '')
+  for (const [commandName, commandFunction] of Object.entries(commands)) {
+    commands[commandName] = new Command({
+      firebase,
+      name: commandName,
+      twitch,
+    }, commandFunction)
+  }
 
-      accumulator[commandName] = new Command({
-        firebase,
-        name: commandName,
-        twitch,
-      })
-    }
-
-    return accumulator
-  }, {})
+  return commands
 }
