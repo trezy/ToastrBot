@@ -28,8 +28,8 @@ export default function (command, options = {}) {
       return expect(this.result).to.have.property('success')
     })
 
-    it('should contain a string to be posted to chat', function () {
-      return expect(this.result).to.have.property('say')
+    it('should contain a response to be posted to chat', function () {
+      return expect(this.result).to.satisfy(({ action, say }) => action || say)
     })
   })
 }
