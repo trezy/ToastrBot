@@ -1,15 +1,31 @@
-export default async options => {
+// Module imports
+import path from 'path'
 
-  if (/^order/.test(args)) {
-    switch (/^order ?(\d+)/.exec(args)[1]) {
-      case '65':
-        response.action = `gets ${user.atName} a coffee from Starbucks.`
-        break
-      case '66':
-        response.action = `fires upon all nearby Jedi.`
-        break
-    }
+
+
+
+
+// Local imports
+import getFilesByType from '../helpers/getFilesByType'
+
+
+
+
+
+export default async options => {
+  const {
+    args,
+    user,
+  } = options
+  const [subcommand] = args.split(' ')
+  const subcommands = getFilesByType('.js', path.resolve(__dirname, 'execute'))
+
+  if (subcommands[subcommand]) {
+    return subcommands[subcommand](options)
   }
 
-  return response
+  return {
+    say: `${user.atName}: \`execute\` requires an action. The options are: ${Object.keys(subcommands).join(', ')}`,
+    success: false,
+  }
 }
