@@ -1,5 +1,4 @@
-export default ({ args, user }) => {
-  const response = {}
+export default async options => {
 
   if (/^order/.test(args)) {
     switch (/^order ?(\d+)/.exec(args)[1]) {
