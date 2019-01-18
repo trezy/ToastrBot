@@ -1,16 +1,6 @@
-// Module imports
-import firebaseAdmin from 'firebase-admin'
-import fs from 'fs'
-import path from'path'
-
-
-
-
-
-
 // Local imports
 import Channel from './Channel'
-import Command from './Command'
+import getLocalCommands from '../helpers/getLocalCommands'
 import logger from '../logger'
 
 
@@ -76,26 +66,10 @@ class Bot {
   }
 
   get commands () {
-    if (!this._commands) {
-      const commandsDirectory = path.resolve(__dirname, '..', 'commands')
-      const commandsDirectoryContents = fs.readdirSync(commandsDirectory)
-
-      const commandFiles = commandsDirectoryContents.filter(filename => /\.js$/.test(filename))
-
-      this._commands = commandFiles.reduce((accumulator, filename) => {
-        const commandName = filename.replace(/\.js$/, '')
-
-        accumulator[commandName] = new Command({
-          firebase: this.firebase,
-          name: commandName,
-          twitch: this.twitch,
-        })
-
-        return accumulator
-      }, {})
-    }
-
-    return this._commands
+    return this._commands || (this._commands = getLocalCommands({
+      firebase: this.firebase,
+      twitch: this.twitch,
+    }))
   }
 
   get defaultOptions () {
