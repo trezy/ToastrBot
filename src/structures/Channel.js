@@ -252,6 +252,10 @@ class Channel {
     return this._permissionsRef || (this._permissionsRef = this.databaseRef.child('permissions'))
   }
 
+  get defaultPrefix () {
+    return this.prefixes[0]
+  }
+
   get prefixesRef () {
     return this._prefixesRef || (this._prefixesRef = this.databaseRef.child('prefixes'))
   }

@@ -1,76 +1,32 @@
-export default async ({ args, bot, channel, commands, user }) => {
-  const [action, commandName, ...commandMessage] = args.split(' ')
-  const response = { success: true }
-  let subaction = 'say'
+// Module imports
+import path from 'path'
 
-  const databaseRef = bot.database.ref(`${channel.safeName}/commands`)
 
-  const command = commands[commandName]
 
-  switch (action) {
-    case 'add':
-      if (command) {
-        response.success = false
-        response.say = `${user.atName}: Command already exists. Try \`${channel.prefix[0]}command modify <command>\` instead.`
-        return response
-      }
 
-      if (['action', 'say'].includes(commandMessage[0])) {
-        subaction = commandMessage.shift()
-      }
 
-      await databaseRef.child(commandName).set({
-        [subaction]: commandMessage.join(' '),
-        name: commandName,
-      })
+// Local imports
+import getFilesByType from '../helpers/getFilesByType'
 
-      break
 
-    case 'modify':
-      if (!command) {
-        response.success = false
-        response.say = `${user.atName}: Command does not exist.`
 
-        return response
-      }
 
-      if (command.isDefault) {
-        response.success = false
-        response.say = `${user.atName}: Cannot modify default commands.`
 
-        return response
-      }
+export default async options => {
+  const {
+    args,
+    channel,
+    user,
+  } = options
+  const [subcommand] = args.split(' ')
+  const subcommands = getFilesByType('.js', path.resolve(__dirname, 'command'))
 
-      if (['action', 'say'].includes(commandMessage[0])) {
-        subaction = commandMessage.shift()
-      }
-
-      await databaseRef.child(commandName).set({
-        [subaction]: commandMessage.join(' '),
-        name: commandName,
-      })
-
-      break
-
-    case 'remove':
-      if (!command) {
-        response.success = false
-        response.say = `${user.atName}: Command does not exist.`
-
-        return response
-      }
-
-      if (command.isDefault) {
-        response.success = false
-        response.say = `${user.atName}: Cannot remove default commands.`
-
-        return response
-      }
-
-      await databaseRef.child(commandName).remove()
-
-      break
+  if (subcommands[subcommand]) {
+    return subcommands[subcommand](options)
   }
 
-  return response
+  return {
+    say: `${user.atName}: \`${channel.defaultPrefix}command\` requires an action. The options are: ${Object.keys(subcommands).join(', ')}`,
+    success: false,
+  }
 }
