@@ -1,3 +1,4 @@
+import { merge } from 'lodash'
 import fs from 'fs'
 import path from 'path'
 
@@ -6,8 +7,11 @@ import path from 'path'
 
 
 import '../mocks/requires/firebase-credentials.mock'
+import Channel from '../../src/structures/Channel'
+import firebaseMock from '../mocks/firebase.mock'
 import User from '../../src/structures/User'
 import userstate from '../mocks/userstate.mock'
+import twitchMock from '../mocks/twitch.mock'
 
 
 
@@ -22,14 +26,21 @@ const commandData = function (options) {
     return accumulator
   }, {})
 
-  return {
+  const bot = {
+    firebase: firebaseMock(),
+    twitch: twitchMock(),
+  }
+
+  return merge({
     args: null,
-    bot: {},
-    channel: {},
+    bot,
+    channel: new Channel({
+      bot,
+      name: `#channel`,
+    }),
     commands: localCommands,
     user: new User(userstate),
-    ...options,
-  }
+  }, options)
 }
 
 
