@@ -1,7 +1,7 @@
 export default async ({ args, bot, channel, commands, user }) => {
   const [, commandName, ...commandMessage] = args.split(' ')
-  const databaseRef = bot.database.ref(`${channel.safeName}/commands`)
   const command = commands[commandName]
+  const databaseRef = bot.database.ref(`${channel.safeName}/commands`)
   let subaction = 'say'
 
   if (!commandName) {
