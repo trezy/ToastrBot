@@ -8,6 +8,7 @@ const firebaseRef = function () {
   return () => ({
     child: firebaseRef(),
     on: spy(() => {}),
+    set: spy(() => {}),
   })
 }
 

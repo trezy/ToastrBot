@@ -7,6 +7,7 @@ import path from 'path'
 
 
 import '../mocks/requires/firebase-credentials.mock'
+import Bot from '../../src/structures/Bot'
 import Channel from '../../src/structures/Channel'
 import firebaseMock from '../mocks/firebase.mock'
 import User from '../../src/structures/User'
@@ -26,10 +27,10 @@ const commandData = function (options) {
     return accumulator
   }, {})
 
-  const bot = {
+  const bot = new Bot({
     firebase: firebaseMock(),
     twitch: twitchMock(),
-  }
+  })
 
   return merge({
     args: null,
