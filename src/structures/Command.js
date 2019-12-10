@@ -20,11 +20,15 @@ class Command {
 
   _afterExecute = (messageData, result, logGroupID) => {
     const {
+      action,
       commandName,
+      embed,
+      say,
       server,
       user,
     } = messageData
     let delayTime = 0
+    let handlerType = null
 
     if ((typeof result.success === 'undefined') || result.success) {
       logger.info(`${user.atName}'s attempt to execute \`${commandName}\` in \`${server.name}\` was successful - executing command functions...`, {
@@ -40,23 +44,31 @@ class Command {
       })
     }
 
-    for (const [key, value] of Object.entries(result)) {
-      let valueAsArray = value
-
-      if (['action', 'embed', 'say'].includes(key)) {
-        if (!Array.isArray(value)) {
-          valueAsArray = [value]
-        }
-
-        for (const item of valueAsArray) {
-          setTimeout(() => {
-            messageData[key](item)
-          }, delayTime)
-
-          delayTime += 500
-        }
+    if (result.embed) {
+      if (embed) {
+        handlerType = 'embed'
+      } else {
+        handlerType = 'say'
       }
+    } else if (result.action) {
+      handlerType = 'action'
+    } else if (result.say) {
+      handlerType = 'say'
     }
+
+    let value = result[handlerType]
+
+    if (!Array.isArray(value)) {
+      value = [value]
+    }
+
+    value.forEach(item => {
+      setTimeout(() => {
+        messageData[handlerType](item)
+      }, delayTime)
+
+      delayTime += 500
+    })
 
     setTimeout(() => logger.info(`Command functions have been queued`, { group: logGroupID }), delayTime)
   }
