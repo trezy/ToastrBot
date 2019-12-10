@@ -1,4 +1,5 @@
 // Module imports
+import 'isomorphic-fetch'
 import Discord from 'discord.io'
 import firebaseAdmin from 'firebase-admin'
 import TwitchJS from 'twitch-js'
