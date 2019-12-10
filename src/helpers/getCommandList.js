@@ -1,5 +1,6 @@
 // Local imports
 import convertArrayToStringList from './convertArrayToStringList'
+import escapeDiscordMarkdown from './escapeDiscordMarkdown'
 
 
 
@@ -14,6 +15,6 @@ export default subcommandsObject => {
 
   return convertArrayToStringList(subcommandKeys, {
     combinator: 'or',
-    transformer: item => `\`${item.replace(/([|`>~_\*])/g, '\$1')}\``,
+    transformer: item => `\`${escapeDiscordMarkdown(item)}\``,
   })
 }
