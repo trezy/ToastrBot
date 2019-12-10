@@ -1,26 +1,42 @@
-export default async ({ args, bot, channel, commands, user }) => {
+// Module imports
+import emoji from 'node-emoji'
+
+
+
+
+
+export default async messageData => {
+  const {
+    args,
+    bot,
+    commands,
+    defaultPrefix,
+    server,
+    user,
+  } = messageData
+  const { commandsCollection } = server
   const [, commandName, ...commandMessage] = args.split(' ')
-  const databaseRef = bot.database.ref(`${channel.safeName}/commands`)
-  const command = commands[commandName]
+  const escapedCommandName = emoji.unemojify(commandName)
+  const command = commands[escapedCommandName]
   let subaction = 'say'
 
   if (!commandName) {
     return {
-      say: `${user.atName}: \`${channel.defaultPrefix}command add\` requires a command name.`,
+      say: `${user.atName}: \`${defaultPrefix}command add\` requires a command name.`,
       success: false,
     }
   }
 
   if (!commandMessage.length) {
     return {
-      say: `${user.atName}: \`${channel.defaultPrefix}command add\` requires a response to be posted when running \`${channel.defaultPrefix}${commandName}\`.`,
+      say: `${user.atName}: \`${defaultPrefix}command add\` requires a response to be posted when running \`${defaultPrefix}${commandName}\`.`,
       success: false,
     }
   }
 
   if (command) {
     return {
-      say: `${user.atName}: Command already exists. If you're trying to update this command, try \`${channel.defaultPrefix}command modify ${commandName}\` instead.`,
+      say: `${user.atName}: Command already exists. If you're trying to update this command, try \`${defaultPrefix}command modify ${commandName}\` instead.`,
       success: false,
     }
   }
@@ -29,13 +45,13 @@ export default async ({ args, bot, channel, commands, user }) => {
     subaction = commandMessage.shift()
   }
 
-  await databaseRef.child(commandName).set({
+  await commandsCollection.add({
     [subaction]: commandMessage.join(' '),
-    name: commandName,
+    name: escapedCommandName,
   })
 
   return {
-    say: `${user.atName}: I've added \`${channel.defaultPrefix}${commandName}\` for you.`,
+    say: `${user.atName}: I've added \`${defaultPrefix}${commandName}\` for you.`,
     success: true,
   }
 }

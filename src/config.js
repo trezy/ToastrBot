@@ -19,6 +19,11 @@ dotenv.config()
 
 module.exports = {
   apis: {
+    discord: {
+      clientID: process.env.TOASTR_DISCORD_CLIENT_ID,
+      clientSecret: process.env.TOASTR_DISCORD_CLIENT_SECRET,
+      accessToken: process.env.TOASTR_DISCORD_ACCESS_TOKEN,
+    },
     firebase: {
       credentials: firebaseCredentials,
       url: process.env.TOASTR_FIREBASE_DB_URL,

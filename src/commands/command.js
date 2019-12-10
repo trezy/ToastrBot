@@ -6,6 +6,7 @@ import path from 'path'
 
 
 // Local imports
+import getCommandList from '../helpers/getCommandList'
 import getFilesByType from '../helpers/getFilesByType'
 
 
@@ -16,6 +17,7 @@ export default async options => {
   const {
     args,
     channel,
+    defaultPrefix,
     user,
   } = options
   const [subcommand] = args.split(' ')
@@ -26,7 +28,7 @@ export default async options => {
   }
 
   return {
-    say: `${user.atName}: \`${channel.defaultPrefix}command\` requires an action. The options are: ${Object.keys(subcommands).join(', ')}`,
+    say: `${user.atName}: \`${defaultPrefix}command\` requires an action. The options are: ${getCommandList(subcommands)}.`,
     success: false,
   }
 }

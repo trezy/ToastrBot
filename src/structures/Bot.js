@@ -1,5 +1,6 @@
 // Local imports
 import Channel from './Channel'
+import DiscordServer from './discord/Server'
 import getLocalCommands from '../helpers/getLocalCommands'
 import logger from '../logger'
 
@@ -12,19 +13,36 @@ class Bot {
     Private Methods
   \***************************************************************************/
 
-  _bindFirebaseEvents () {
-    this.channelsRef.on('child_added', ({ key }) => this._handleNewChannel(key))
+  _bindDiscordEvents = () => {
+    this.discord.on('ready', () => {
+      logger.info('Discord bot is ready!')
+    })
+
+    this.discord.on('guildCreate', async server => {
+      logger.info(`New Discord server added: ${server.name}`)
+
+      this.discordServers[server.id] = new DiscordServer(server, this)
+    })
+
+    this.discord.on('disconnect', (errMsg, code) => {
+      logger.info(`Disconnected from Discord. Error Code ${code}. ${errMsg ? `Message ${errMsg}.` : 'No message.'}`)
+      this.discord.connect()
+    })
   }
 
-  _handleNewChannel = async channelName => {
+  _bindFirebaseEvents = () => {
+    this.twitchRef.on('child_added', ({ key }) => this._handleNewTwitchChannel(key))
+  }
+
+  _handleNewTwitchChannel = async channelName => {
     logger.info(`New channel added: ${channelName}`)
 
-    this.channels[channelName] = new Channel({
+    this.twitchChannels[channelName] = new Channel({
       bot: this,
       name: `#${channelName}`,
     })
 
-    await this.channels[channelName].join()
+    await this.twitchChannels[channelName].join()
   }
 
 
@@ -36,13 +54,16 @@ class Bot {
   \***************************************************************************/
 
   constructor (options) {
-    const { twitch } = options
-
     this.options = options
+    this.initialize()
+  }
 
+  initialize = async () => {
+    this._bindDiscordEvents()
     this._bindFirebaseEvents()
 
-    twitch.connect()
+    this.discord.connect()
+    this.twitch.connect()
   }
 
 
@@ -53,23 +74,15 @@ class Bot {
     Getters
   \***************************************************************************/
 
-  get channels () {
-    return this._channels || (this._channels = {})
-  }
-
-  get channelsRef () {
-    return this._channelsRef || (this._channelsRef = this.database.ref('channels'))
-  }
-
-  get database () {
-    return this.firebase.database()
-  }
-
   get commands () {
     return this._commands || (this._commands = getLocalCommands({
       firebase: this.firebase,
       twitch: this.twitch,
     }))
+  }
+
+  get database () {
+    return this.firebase.database()
   }
 
   get defaultOptions () {
@@ -79,8 +92,24 @@ class Bot {
     }
   }
 
+  get discord () {
+    return this.options.discord
+  }
+
+  get discordServers () {
+    return this._discordServers || (this._discordServers = {})
+  }
+
+  get discordServersRef () {
+    return this._discordServersRef || (this._discordServersRef = this.database.ref('discord/servers'))
+  }
+
   get firebase () {
     return this.options.firebase
+  }
+
+  get firestore () {
+    return this.firebase.firestore()
   }
 
   get options () {
@@ -89,6 +118,14 @@ class Bot {
 
   get twitch () {
     return this.options.twitch
+  }
+
+  get twitchChannels () {
+    return this._twitchChannels || (this._twitchChannels = {})
+  }
+
+  get twitchRef () {
+    return this._twitchRef || (this._twitchRef = this.database.ref('twitch'))
   }
 
 

@@ -6,6 +6,7 @@ import path from 'path'
 
 
 // Local imports
+import getCommandList from '../../helpers/getCommandList'
 import getFilesByType from '../../helpers/getFilesByType'
 
 
@@ -25,7 +26,7 @@ export default options => {
   }
 
   return {
-    say: `${user.atName}: \`execute order\` requires an order number. The options are: ${Object.keys(subcommands).join(', ')}`,
+    say: `${user.atName}: \`execute order\` requires an order number. The options are: ${getCommandList(subcommands)}`,
     success: false,
   }
 }

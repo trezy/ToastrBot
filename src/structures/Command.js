@@ -15,37 +15,25 @@ import logger from '../logger'
 
 class Command {
   /***************************************************************************\
-    Public Methods
+    Private Methods
   \***************************************************************************/
 
-  constructor (options, commandFunction) {
-    this.options = options
-    this.commandFunction = commandFunction
-  }
-
-  async execute (messageData) {
-    const { args, channel, commandName, user } = messageData
-    const logGroupID = uuid()
+  _afterExecute = (messageData, result, logGroupID) => {
+    const {
+      commandName,
+      server,
+      user,
+    } = messageData
     let delayTime = 0
 
-    logger.info(`${user.atName} is attempting to execute \`${commandName}\` in \`${channel.name}\``, {
-      args,
-      channel: channel.name,
-      commandName,
-      group: logGroupID,
-      user: user.name,
-    })
-
-    const result = await this.commandFunction(messageData, this.firebase)
-
     if ((typeof result.success === 'undefined') || result.success) {
-      logger.info(`${user.atName}'s attempt to execute \`${commandName}\` in \`${channel.name}\` was successful - executing command functions...`, {
+      logger.info(`${user.atName}'s attempt to execute \`${commandName}\` in \`${server.name}\` was successful - executing command functions...`, {
         group: logGroupID,
         result,
         success: true,
       })
     } else {
-      logger.info(`${user.atName}'s attempt to execute \`${commandName}\` in \`${channel.name}\` was unsuccessful`, {
+      logger.info(`${user.atName}'s attempt to execute \`${commandName}\` in \`${server.name}\` was unsuccessful`, {
         group: logGroupID,
         result,
         success: false,
@@ -62,7 +50,7 @@ class Command {
 
         for (const item of valueAsArray) {
           setTimeout(() => {
-            this.twitch[key](channel.name, item)
+            messageData[key](item)
           }, delayTime)
 
           delayTime += 500
@@ -71,6 +59,56 @@ class Command {
     }
 
     setTimeout(() => logger.info(`Command functions have been queued`, { group: logGroupID }), delayTime)
+  }
+
+  _beforeExecute = (messageData, logGroupID) => {
+    const {
+      args,
+      commandName,
+      server,
+      user,
+    } = messageData
+
+    logger.info(`${user.atName} is attempting to execute \`${commandName}\` in \`${server.name}\``, {
+      args,
+      commandName,
+      group: logGroupID,
+      server: server.name,
+      serverID: server.id,
+      serverType: server.type,
+      user: user.name,
+    })
+  }
+
+
+
+
+
+  /***************************************************************************\
+    Public Methods
+  \***************************************************************************/
+
+  constructor (options, commandFunction) {
+    this.options = options
+    this.commandFunction = commandFunction
+  }
+
+  async execute (messageData) {
+    const {
+      args,
+      channel,
+      commandName,
+      server,
+      user,
+    } = messageData
+    const logGroupID = uuid()
+    let delayTime = 0
+
+    this._beforeExecute(messageData, logGroupID)
+
+    const result = await this.commandFunction(messageData, this.firebase)
+
+    this._afterExecute(messageData, result, logGroupID)
   }
 
 
@@ -87,15 +125,24 @@ class Command {
 
   get defaultOptions () {
     return {
+      firebase: null,
+      discord: null,
       name: null,
       state: 'default',
-      firebase: null,
       twitch: null,
     }
   }
 
+  get discord () {
+    return this.options.discord
+  }
+
   get firebase () {
     return this.options.firebase
+  }
+
+  get id () {
+    return this.options.id
   }
 
   get isDefault () {
@@ -112,6 +159,10 @@ class Command {
 
   get options () {
     return this._options || this.defaultOptions
+  }
+
+  get permissions () {
+    return this.options.permissions
   }
 
   get state () {

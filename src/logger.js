@@ -63,7 +63,7 @@ const logger = createLogger({
       format: combineFormat(excludeLevels(['error', 'warn']), timestampFormat(), jsonFormat()),
       filename: '%DATE%-info.log',
     }),
-    new ConsoleTransport(),
+    new ConsoleTransport({ colorize: true }),
   ]
 })
 

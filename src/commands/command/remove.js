@@ -1,6 +1,21 @@
-export default async ({ args, bot, channel, commands, user }) => {
+// Local imports
+import getCommandList from '../../helpers/getCommandList'
+
+
+
+
+
+export default async messageData => {
+  const {
+    args,
+    bot,
+    commands,
+    defaultPrefix,
+    server,
+    user,
+  } = messageData
+  const { commandsCollection } = server
   const [, commandName] = args.split(' ')
-  const databaseRef = bot.database.ref(`${channel.safeName}/commands`)
   const command = commands[commandName]
 
   if (!commandName) {
@@ -13,7 +28,7 @@ export default async ({ args, bot, channel, commands, user }) => {
     }, [])
 
     return {
-      say: `${user.atName}: \`${channel.defaultPrefix}command remove\` requires a command name. The options are: ${removableCommands.join(', ')}`,
+      say: `${user.atName}: \`${defaultPrefix}command remove\` requires a command name. The options are: ${getCommandList(removableCommands)}`,
       success: false,
     }
   }
@@ -32,10 +47,10 @@ export default async ({ args, bot, channel, commands, user }) => {
     }
   }
 
-  await databaseRef.child(commandName).remove()
+  await commandsCollection.doc(command.id).delete()
 
   return {
-    say: `${user.atName}: I've removed \`${channel.defaultPrefix}${commandName}\` for you.`,
+    say: `${user.atName}: I've removed \`${defaultPrefix}${commandName}\` for you.`,
     success: true,
   }
 }

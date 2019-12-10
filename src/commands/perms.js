@@ -6,7 +6,7 @@ import path from 'path'
 
 
 // Local imports
-import convertArrayToStringList from '../helpers/convertArrayToStringList'
+import getCommandList from '../helpers/getCommandList'
 import getFilesByType from '../helpers/getFilesByType'
 
 
@@ -17,6 +17,7 @@ export default async options => {
   const {
     args,
     channel,
+    defaultPrefix,
     user,
   } = options
   const [subcommand] = args.split(' ')
@@ -27,7 +28,7 @@ export default async options => {
   }
 
   return {
-    say: `${user.atName}: \`${channel.defaultPrefix}perms\` requires an action. The options are: ${convertArrayToStringList(Object.keys(subcommands))}.`,
+    say: `${user.atName}: \`${defaultPrefix}perms\` requires an action. The options are: ${getCommandList(subcommands)}.`,
     success: false,
   }
 }

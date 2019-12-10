@@ -1,6 +1,7 @@
 // Local imports
-import Command from './Command'
+import config from '../config'
 import logger from '../logger'
+import TwitchCommand from './TwitchCommand'
 import User from './User'
 
 
@@ -37,6 +38,7 @@ class Channel {
   }
 
   _bindTwitchEvents () {
+    console.log('Binding Twitch events')
     this.twitch.on('chat', this._handleMessage)
     this.twitch.on('join', this._handleChannelJoin)
   }
@@ -44,7 +46,7 @@ class Channel {
   _handleChangedCommand = snapshot => {
     const command = snapshot.val()
 
-    this.commands[snapshot.key] = new Command({
+    this.commands[snapshot.key] = new TwitchCommand({
       firebase: this.firebase,
       name: snapshot.key,
       state: 'remote',
@@ -61,7 +63,7 @@ class Channel {
   }
 
   _handleChannelJoin = (channelName, username, self) => {
-    if (self && (channelName === this.name)) {
+    if (self && (channelName === this.name.toLowerCase())) {
       // this.twitch.off('join', this._handleChannelJoin)
       this.state = 'connected'
     }
@@ -106,9 +108,13 @@ class Channel {
             channel: this,
             commandName,
             commands: this.commands,
+            defaultPrefix: this.prefixes[0],
             message: safeMessage,
             self,
             user,
+
+            action: response => this.twitch.action(this.name, response.action),
+            say: response => this.twitch.say(this.name, response.say),
           })
         } else {
           this.twitch.say(this.name, `Sorry, ${user.atName}, you're not permitted to use the \`${command.name}\` command`)
@@ -120,7 +126,7 @@ class Channel {
   _handleNewCommand = snapshot => {
     const command = snapshot.val()
 
-    this.commands[snapshot.key] = new Command({
+    this.commands[snapshot.key] = new TwitchCommand({
       firebase: this.firebase,
       name: snapshot.key,
       state: 'remote',
@@ -173,7 +179,6 @@ class Channel {
     this.options = options
 
     this._bindFirebaseEvents()
-
     this._bindTwitchEvents()
   }
 
@@ -229,11 +234,15 @@ class Channel {
   }
 
   get databaseRef () {
-    return this._databaseRef || (this._databaseRef = this.database.ref(this.safeName))
+    return this._databaseRef || (this._databaseRef = this.database.ref(`twitch/${this.safeName}`))
   }
 
   get defaultOptions () {
     return { name: null }
+  }
+
+  get discord () {
+    return this.bot.discord
   }
 
   get firebase () {
@@ -258,6 +267,10 @@ class Channel {
 
   get prefixesRef () {
     return this._prefixesRef || (this._prefixesRef = this.databaseRef.child('prefixes'))
+  }
+
+  get roles () {
+    return config.roles
   }
 
   get safeName () {

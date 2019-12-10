@@ -1,5 +1,10 @@
-export default function (array, combinator = 'and') {
-  let arrayClone = [...array]
+export default function (array, options = {}) {
+  const {
+    combinator = 'and',
+    transformer = item => item,
+  } = options
+
+  let arrayClone = [...array].map(transformer)
 
   if (arrayClone.length > 1) {
     const lastItemIndex = arrayClone.length - 1

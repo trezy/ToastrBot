@@ -12,9 +12,12 @@
     "test": "mocha --recursive --require @babel/register"
   },
   "dependencies": {
+    "discord.io": "woor/discord.io#gateway_v6",
     "dotenv": "^6.2.0",
-    "firebase-admin": "^6.5.0",
+    "firebase-admin": "^8.8.0",
     "lodash": "^4.17.11",
+    "node-emoji": "^1.10.0",
+    "sentiment": "^5.0.1",
     "sinon-chai": "^3.3.0",
     "twitch-js": "^1.2.17",
     "uuid": "^3.3.2",

@@ -1,4 +1,5 @@
 // Module imports
+import Discord from 'discord.io'
 import firebaseAdmin from 'firebase-admin'
 import TwitchJS from 'twitch-js'
 
@@ -25,6 +26,8 @@ const twitchClient = new TwitchJS.client({
   },
 })
 
+const discordClient = new Discord.Client({ token: config.apis.discord.accessToken })
+
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(config.apis.firebase.credentials),
   databaseURL: config.apis.firebase.url,
@@ -35,6 +38,7 @@ firebaseAdmin.initializeApp({
 
 
 new Bot({
+  discord: discordClient,
   firebase: firebaseAdmin,
   twitch: twitchClient,
 })

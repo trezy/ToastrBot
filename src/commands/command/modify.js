@@ -1,7 +1,30 @@
-export default async ({ args, bot, channel, commands, user }) => {
+// Module imports
+import emoji from 'node-emoji'
+
+
+
+
+
+// Local imports
+import getCommandList from '../../helpers/getCommandList'
+
+
+
+
+
+export default async messageData => {
+  const {
+    args,
+    bot,
+    commands,
+    defaultPrefix,
+    server,
+    user,
+  } = messageData
+  const { commandsCollection } = server
   const [, commandName, ...commandMessage] = args.split(' ')
-  const command = commands[commandName]
-  const databaseRef = bot.database.ref(`${channel.safeName}/commands`)
+  const escapedCommandName = emoji.unemojify(commandName)
+  const command = commands[escapedCommandName]
   let subaction = 'say'
 
   if (!commandName) {
@@ -13,22 +36,23 @@ export default async ({ args, bot, channel, commands, user }) => {
       return accumulator
     }, [])
 
+
     return {
-      say: `${user.atName}: \`${channel.defaultPrefix}command modify\` requires a command name. The options are: ${modifiableCommands.join(', ')}`,
+      say: `${user.atName}: \`${defaultPrefix}command modify\` requires a command name. The options are: ${getCommandList(modifiableCommands)}`,
       success: false,
     }
   }
 
   if (!commandMessage.length) {
     return {
-      say: `${user.atName}: \`${channel.defaultPrefix}command modify\` requires a response to be posted when running \`${channel.defaultPrefix}${commandName}\`.`,
+      say: `${user.atName}: \`${defaultPrefix}command modify\` requires a response to be posted when running \`${defaultPrefix}${commandName}\`.`,
       success: false,
     }
   }
 
   if (!command) {
     return {
-      say: `${user.atName}: \`${channel.defaultPrefix}${commandName}\` does not exist.`,
+      say: `${user.atName}: \`${defaultPrefix}${commandName}\` does not exist.`,
       success: false,
     }
   }
@@ -44,13 +68,10 @@ export default async ({ args, bot, channel, commands, user }) => {
     subaction = commandMessage.shift()
   }
 
-  await databaseRef.child(commandName).set({
-    [subaction]: commandMessage.join(' '),
-    name: commandName,
-  })
+  await commandsCollection.doc(command.id).update({ [subaction]: commandMessage.join(' ') })
 
   return {
-    say: `${user.atName}: I've updated \`${channel.defaultPrefix}${commandName}\` for you.`,
+    say: `${user.atName}: I've updated \`${defaultPrefix}${commandName}\` for you.`,
     success: true,
   }
 }

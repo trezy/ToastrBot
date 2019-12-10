@@ -26,11 +26,15 @@ class User {
   \***************************************************************************/
 
   get atName () {
-    return `@${this.userstate['display-name']}`
+    return `@${this.displayName}`
   }
 
   get badges () {
     return this.userstate.badges || {}
+  }
+
+  get displayName () {
+    return this.userstate['display-name']
   }
 
   get id () {
