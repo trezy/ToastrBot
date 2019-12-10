@@ -7,6 +7,7 @@ import uuid from 'uuid/v4'
 
 
 // Local imports
+import getColorFromName from '../helpers/getColorFromName'
 import logger from '../logger'
 
 
@@ -47,6 +48,10 @@ class Command {
     if (result.embed) {
       if (embed) {
         handlerType = 'embed'
+
+        if (typeof result.embed.color === 'string') {
+          result.embed.color = getColorFromName(result.embed.color)
+        }
       } else {
         handlerType = 'say'
       }
