@@ -1,4 +1,5 @@
 // Module imports
+import fs from 'fs'
 import path from 'path'
 import uuid from 'uuid/v4'
 
@@ -7,6 +8,7 @@ import uuid from 'uuid/v4'
 
 
 // Local imports
+import fillTemplate from '../helpers/fillTemplate'
 import getColorFromName from '../helpers/getColorFromName'
 import logger from '../logger'
 
@@ -128,6 +130,10 @@ class Command {
     this._afterExecute(messageData, result, logGroupID)
   }
 
+  getDescription = options => fillTemplate(this.descriptionTemplate, options)
+
+  getHint = options => fillTemplate(this.hintTemplate || '', options)
+
 
 
 
@@ -150,12 +156,46 @@ class Command {
     }
   }
 
+  get descriptionTemplate () {
+    return this.docsFrontMatter?.description || '*This command has no description.*'
+  }
+
   get discord () {
     return this.options.discord
   }
 
+  get docs () {
+    try {
+      return fs.readFileSync(this.docsPath, 'utf8')
+    } catch (error) {
+      return '*This command has no docs.*'
+    }
+  }
+
+  get docsFrontMatter () {
+    const frontMatterObject = {}
+    const frontMatterString = /^\s*---([\S\s]*)---/gm.exec(this.docs)
+
+    if (frontMatterString) {
+      frontMatterString[1].trim().split('\n').forEach(line => {
+        const [key, value] = line.replace(/:\s*:\s*/, ':').split(':')
+        frontMatterObject[key] = value
+      })
+    }
+
+    return frontMatterObject
+  }
+
+  get docsPath () {
+    return path.resolve(__dirname, '..', 'commandDocs', `${this.name}.md`)
+  }
+
   get firebase () {
     return this.options.firebase
+  }
+
+  get hintTemplate () {
+    return this.docsFrontMatter?.hint
   }
 
   get id () {
