@@ -180,16 +180,16 @@ class Server {
               action: response => {
                 this.discord.sendMessage({
                   to: channel.id,
-                  message: `_${response}_`,
+                  message: `_${emoji.emojify(response)}_`,
                 })
               },
 
               say: response => {
                 this.discord.sendMessage({
-                  message: response,
+                  message: emoji.emojify(response),
                   to: channel.id,
                 })
-              }
+              },
             })
           } else {
             this.discord.sendMessage({
