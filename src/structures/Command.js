@@ -43,7 +43,7 @@ class Command {
     for (const [key, value] of Object.entries(result)) {
       let valueAsArray = value
 
-      if (['action', 'say'].includes(key)) {
+      if (['action', 'embed', 'say'].includes(key)) {
         if (!Array.isArray(value)) {
           valueAsArray = [value]
         }

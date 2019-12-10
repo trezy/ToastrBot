@@ -184,6 +184,13 @@ class Server {
                 })
               },
 
+              embed: response => {
+                this.discord.sendMessage({
+                  to: channel.id,
+                  embed: response,
+                })
+              },
+
               say: response => {
                 this.discord.sendMessage({
                   message: emoji.emojify(response),
