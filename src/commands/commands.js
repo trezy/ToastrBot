@@ -29,7 +29,7 @@ export default messageData => {
         let value = description
 
         if (hint) {
-          value += `\n\n**Usage**:\n\`\`\`sh\n${hint}\`\`\`---`
+          value += `\n*Usage*: \`${hint}\``
         }
 
         return {
