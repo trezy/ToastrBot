@@ -25,6 +25,7 @@ export default async ({ args, user }) => {
       color: 14433988,
       description: `${user.atName}: ${magic.answer}. ${emoji}`,
     }
+    response.say = `${user.atName}: ${magic.answer}. ${emoji}`
   } else {
     response.say = `I'm sorry, ${user.atName}, but you must provide a query for the magic 8-ball to respond.`
     response.success = false
