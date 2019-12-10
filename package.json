@@ -12,6 +12,7 @@
     "test": "mocha --recursive --require @babel/register"
   },
   "dependencies": {
+    "colornames": "^1.1.1",
     "discord.io": "woor/discord.io#gateway_v6",
     "dotenv": "^8.2.0",
     "firebase-admin": "^8.8.0",

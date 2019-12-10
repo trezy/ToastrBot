@@ -1,3 +1,10 @@
+// Local import
+import getColorFromName from '../helpers/getColorFromName'
+
+
+
+
+
 export default async ({ args, user }) => {
   const response = { success: true }
 
@@ -22,7 +29,7 @@ export default async ({ args, user }) => {
 
     response.embed = {
       author: { name: '🔮 The Magic 8-ball says...' },
-      color: 14433988,
+      color: getColorFromName('purple'),
       description: `${user.atName}: ${magic.answer}. ${emoji}`,
     }
     response.say = `${user.atName}: ${magic.answer}. ${emoji}`
