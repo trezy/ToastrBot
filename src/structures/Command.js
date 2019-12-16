@@ -50,10 +50,6 @@ class Command {
     if (result.embed) {
       if (embed) {
         handlerType = 'embed'
-
-        if (typeof result.embed.color === 'string') {
-          result.embed.color = getColorFromName(result.embed.color)
-        }
       } else {
         handlerType = 'say'
       }
@@ -67,6 +63,13 @@ class Command {
 
     if (!Array.isArray(value)) {
       value = [value]
+    }
+
+    if (handlerType === 'embed') {
+      value = value.map(item => ({
+        ...item,
+        color: (typeof item.color === 'string') ? getColorFromName(item.color) : item.color,
+      }))
     }
 
     value.forEach(item => {
@@ -165,6 +168,10 @@ class Command {
   }
 
   get docs () {
+    return this.docsFile.replace(/^\s*---([\S\s]*)---/gm, '').trim()
+  }
+
+  get docsFile () {
     try {
       return fs.readFileSync(this.docsPath, 'utf8')
     } catch (error) {
@@ -174,7 +181,7 @@ class Command {
 
   get docsFrontMatter () {
     const frontMatterObject = {}
-    const frontMatterString = /^\s*---([\S\s]*)---/gm.exec(this.docs)
+    const frontMatterString = /^\s*---([\S\s]*)---/gm.exec(this.docsFile)
 
     if (frontMatterString) {
       frontMatterString[1].trim().split('\n').forEach(line => {
