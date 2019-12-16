@@ -135,6 +135,8 @@ class Command {
 
   getDescription = options => fillTemplate(this.descriptionTemplate, options)
 
+  getDocs = options => fillTemplate(this.docsTemplate, options)
+
   getHint = options => fillTemplate(this.hintTemplate || '', options)
 
 
@@ -167,7 +169,7 @@ class Command {
     return this.options.discord
   }
 
-  get docs () {
+  get docsTemplate () {
     return this.docsFile.replace(/^\s*---([\S\s]*)---/gm, '').trim()
   }
 

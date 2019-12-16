@@ -38,10 +38,10 @@ export default async messageData => {
       }
     }
 
-    docs = helpCommand.docs
+    docs = helpCommand.getDocs(messageData)
     hint = helpCommand.getHint(messageData)
   } else {
-    docs = command.docs
+    docs = command.getDocs(messageData)
     hint = command.getHint(messageData)
   }
 
