@@ -170,7 +170,7 @@ class Command {
   }
 
   get docsTemplate () {
-    return this.docsFile.replace(/^\s*---([\S\s]*)---/gm, '').trim()
+    return this.docsFile.replace(/^\s*---([\S\s]*?)---/m, '').trim()
   }
 
   get docsFile () {
@@ -183,7 +183,7 @@ class Command {
 
   get docsFrontMatter () {
     const frontMatterObject = {}
-    const frontMatterString = /^\s*---([\S\s]*)---/gm.exec(this.docsFile)
+    const frontMatterString = /^\s*---([\S\s]*?)---/m.exec(this.docsFile)
 
     if (frontMatterString) {
       frontMatterString[1].trim().split('\n').forEach(line => {
