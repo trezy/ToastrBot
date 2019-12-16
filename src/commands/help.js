@@ -53,10 +53,13 @@ export default async messageData => {
         color: 'blue',
         description: docsPage,
         fields: [],
-        footer: {
-          text: `Page ${index + 1} of ${array.length}`,
-        },
         title: `\`${defaultPrefix}${args}\` Documentation`,
+      }
+
+      if (array.length > 1) {
+        embedObject.footer = {
+          text: `Page ${index + 1} of ${array.length}`,
+        }
       }
 
       if (index === (array.length - 1)) {
