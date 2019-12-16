@@ -6,11 +6,11 @@ const MESSAGE_LENGTH_LIMIT = 2000
 
 
 export default docs => {
-  if (docs.length < MESSAGE_LENGTH_LIMIT) {
-    return docs
-  }
-
   const splitDocs = [docs]
+
+  if (docs.length < MESSAGE_LENGTH_LIMIT) {
+    return splitDocs
+  }
 
   while (splitDocs[splitDocs.length - 1].length > MESSAGE_LENGTH_LIMIT) {
     const docsToChunk = splitDocs[splitDocs.length - 1]
