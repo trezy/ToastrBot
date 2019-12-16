@@ -22,21 +22,10 @@ export default messageData => {
   return {
     embed: {
       color: 'blue',
-      fields: Object.values(commands).map(command => {
-        const description = command.getDescription(messageData)
-        const hint = command.getHint(messageData)
-
-        let value = description
-
-        if (hint) {
-          value += `\n*Usage*: \`${hint}\``
-        }
-
-        return {
-          name: `\`${defaultPrefix}${escapeDiscordMarkdown(emoji.emojify(command.name))}\``,
-          value,
-        }
-      }),
+      fields: Object.values(commands).map(command => ({
+        name: `\`${defaultPrefix}${escapeDiscordMarkdown(emoji.emojify(command.name))}\``,
+        value: command.getDescription(messageData),
+      })),
       title: 'Available Commands',
     },
     say: emoji.emojify(`This is a list of all available commands: ${getCommandList(commands)}.`),
