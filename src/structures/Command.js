@@ -160,7 +160,7 @@ class Command {
   }
 
   get descriptionTemplate () {
-    return this.docsFrontMatter?.description || '*This command has no description.*'
+    return this.docsFrontMatter?.description || '*No description.*'
   }
 
   get discord () {
@@ -175,7 +175,7 @@ class Command {
     try {
       return fs.readFileSync(this.docsPath, 'utf8')
     } catch (error) {
-      return '*This command has no docs.*'
+      return '*No docs.*'
     }
   }
 
