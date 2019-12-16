@@ -170,6 +170,7 @@ class Server {
               args,
               bot: this.bot,
               channel,
+              command,
               commandName,
               commands: this.commands,
               defaultPrefix: this.prefixes[0],
