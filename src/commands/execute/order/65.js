@@ -1,4 +1,4 @@
 export default ({ user }) => ({
-  action: `gets ${user.atName} a coffee from Starbucks.`,
+  say: `Understood. We shall pursue the former Supreme Commander until they have been detained, with lethal force if necessary.`,
   success: true,
 })
