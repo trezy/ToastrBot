@@ -7,7 +7,7 @@ export default async ({ args, user }) => {
     let emoji = null
 
     switch (magic.type) {
-      case 'Affirmitive':
+      case 'Affirmative':
         emoji = '😁'
         break
 
