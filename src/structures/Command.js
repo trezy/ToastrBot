@@ -11,6 +11,7 @@ import uuid from 'uuid/v4'
 import fillTemplate from '../helpers/fillTemplate'
 import getColorFromName from '../helpers/getColorFromName'
 import logger from '../logger'
+import parseDiscordVariables from '../helpers/parseDiscordVariables'
 
 
 
@@ -24,6 +25,7 @@ class Command {
   _afterExecute = (messageData, result, logGroupID) => {
     const {
       action,
+      args,
       commandName,
       embed,
       say,
@@ -69,7 +71,12 @@ class Command {
       value = value.map(item => ({
         ...item,
         color: (typeof item.color === 'string') ? getColorFromName(item.color) : item.color,
+        description: item.description ? this._renderSubstitution(item.description, messageData) : null,
       }))
+    }
+
+    if (['action', 'say'].includes(handlerType)) {
+      value = value.map(item => this._renderSubstitution(item, messageData))
     }
 
     value.forEach(item => {
@@ -100,6 +107,68 @@ class Command {
       serverType: server.type,
       user: user.name,
     })
+  }
+
+  _renderSubstitution = (string, messageData) => {
+    const {
+      args,
+      server,
+    } = messageData
+    const splitArgs = args.split(' ')
+    const onlyDecimalsRegex = /^\d+$/u
+    const replaceableRegex = /\{\{([\S\s]+?)\}\}/gmu
+    const startsWithDecimalRegex = /^(\d+)\./u
+    const stringRegex = /^['"](.*)['"]$/u
+    const matches = [...string.matchAll(replaceableRegex)]
+
+    let alteredString = string
+
+    matches.forEach(([original, capture]) => {
+      const discordVariables = parseDiscordVariables(args, server)
+      const replaceables = capture.split('|').map(item => {
+        const trimmedItem = item.trim()
+
+        if (onlyDecimalsRegex.test(trimmedItem)) {
+          return parseInt(trimmedItem)
+        }
+
+        return trimmedItem
+      })
+
+      while (replaceables.length > 0) {
+        const replaceable = replaceables[0]
+
+        if ((typeof replaceable === 'number') && splitArgs[replaceable]) {
+          alteredString = alteredString.replace(original, splitArgs[replaceable])
+          break
+        }
+
+        if (typeof replaceable === 'string') {
+          if (stringRegex.test(replaceable)) {
+            alteredString = alteredString.replace(original, replaceable.replace(stringRegex, '$1'))
+            break
+          }
+
+          if (startsWithDecimalRegex.test(replaceable)) {
+            const splitReplaceable = replaceable.split('.')
+
+            const arg = splitArgs[splitReplaceable.shift()]
+            let replacement = discordVariables[arg]
+
+            splitReplaceable.forEach(key => {
+              replacement = replacement[key]
+            })
+
+            alteredString = alteredString.replace(original, replacement)
+            break
+          }
+        }
+
+        replaceables.shift()
+      }
+    })
+
+    return alteredString
   }
 
 
