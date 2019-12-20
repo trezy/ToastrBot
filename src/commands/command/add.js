@@ -5,6 +5,13 @@ import emoji from 'node-emoji'
 
 
 
+// Local constants
+const commandNameValidationRegex = /^[\w-]*$/u
+
+
+
+
+
 export default async messageData => {
   const {
     args,
@@ -23,6 +30,13 @@ export default async messageData => {
   if (!commandName) {
     return {
       say: `${user.atName}: \`${defaultPrefix}command add\` requires a command name.`,
+      success: false,
+    }
+  }
+
+  if (!commandNameValidationRegex.test(commandName)) {
+    return {
+      say: `${user.atName}: \`${defaultPrefix}${commandName}\` is an invalid command name. Command names may only contain letters, numbers, and hyphens.`,
       success: false,
     }
   }
