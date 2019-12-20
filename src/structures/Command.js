@@ -122,15 +122,18 @@ class Command {
   _renderSubstitution = (string, messageData) => {
     const {
       args,
+      commandName,
+      defaultPrefix,
       server,
+      user,
     } = messageData
+    const serverVariables = parseDiscordVariables(args, server)
     const splitArgs = args.split(' ')
-    const matches = [...string.matchAll(replaceableRegex)]
 
-    let alteredString = string
+    let argsRequired = new Set
+    let argsOptional = new Set
 
-    matches.forEach(([original, capture]) => {
-      const discordVariables = parseDiscordVariables(args, server)
+    const alteredString = string.replace(replaceableRegex, (original, capture) => {
       const replaceables = capture.split('|').map(item => {
         const trimmedItem = item.trim()
 
@@ -144,35 +147,46 @@ class Command {
       while (replaceables.length > 0) {
         const replaceable = replaceables[0]
 
-        if ((typeof replaceable === 'number') && splitArgs[replaceable]) {
-          alteredString = alteredString.replace(original, splitArgs[replaceable])
-          break
+        if (typeof replaceable === 'number') {
+          argsOptional.add(replaceable)
+
+          if (splitArgs[replaceable]) {
+            return splitArgs[replaceable]
+          } else if (replaceables.length === 1) {
+            argsRequired.add(replaceable)
+          }
         }
 
         if (typeof replaceable === 'string') {
           if (stringRegex.test(replaceable)) {
-            alteredString = alteredString.replace(original, replaceable.replace(stringRegex, '$1'))
-            break
+            return replaceable.replace(stringRegex, '$1')
           }
 
           if (startsWithDecimalRegex.test(replaceable)) {
             const splitReplaceable = replaceable.split('.')
 
+            argsOptional.add(parseInt(splitReplaceable[0]))
+
             const arg = splitArgs?.[splitReplaceable.shift()]
-            let replacement = discordVariables[arg]
+            let replacement = serverVariables[arg]
 
             splitReplaceable.forEach(key => {
               replacement = replacement?.[key]
             })
 
-            alteredString = alteredString.replace(original, replacement)
-            break
+            return replacement
           }
         }
 
         replaceables.shift()
       }
+
+      return original
     })
+
+    if (argsRequired.size) {
+      return `${user.atName}: ${defaultPrefix}${commandName} requires ${argsRequired.size} more arguments.`
+    }
 
     return alteredString
   }
