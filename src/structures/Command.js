@@ -17,6 +17,16 @@ import parseDiscordVariables from '../helpers/parseDiscordVariables'
 
 
 
+// Local constants
+const onlyDecimalsRegex = /^\d+$/u
+const replaceableRegex = /\{\{([\S\s]+?)\}\}/gmu
+const startsWithDecimalRegex = /^(\d+)\./u
+const stringRegex = /^['"](.*)['"]$/u
+
+
+
+
+
 class Command {
   /***************************************************************************\
     Private Methods
@@ -115,10 +125,6 @@ class Command {
       server,
     } = messageData
     const splitArgs = args.split(' ')
-    const onlyDecimalsRegex = /^\d+$/u
-    const replaceableRegex = /\{\{([\S\s]+?)\}\}/gmu
-    const startsWithDecimalRegex = /^(\d+)\./u
-    const stringRegex = /^['"](.*)['"]$/u
     const matches = [...string.matchAll(replaceableRegex)]
 
     let alteredString = string
@@ -152,11 +158,11 @@ class Command {
           if (startsWithDecimalRegex.test(replaceable)) {
             const splitReplaceable = replaceable.split('.')
 
-            const arg = splitArgs[splitReplaceable.shift()]
+            const arg = splitArgs?.[splitReplaceable.shift()]
             let replacement = discordVariables[arg]
 
             splitReplaceable.forEach(key => {
-              replacement = replacement[key]
+              replacement = replacement?.[key]
             })
 
             alteredString = alteredString.replace(original, replacement)
