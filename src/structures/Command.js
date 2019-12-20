@@ -78,14 +78,26 @@ class Command {
     }
 
     if (handlerType === 'embed') {
-      value = value.map(item => ({
-        ...item,
-        color: (typeof item.color === 'string') ? getColorFromName(item.color) : item.color,
-        description: item.description ? this._renderSubstitution(item.description, messageData) : null,
-      }))
+      value = value.map(item => {
+        let description = null
+
+        if (item.description) {
+          if (result.ignoreSubstitution) {
+            description = item.description
+          } else {
+            description = this._renderSubstitution(item.description, messageData)
+          }
+        }
+
+        return {
+          ...item,
+          color: (typeof item.color === 'string') ? getColorFromName(item.color) : item.color,
+          description,
+        }
+      })
     }
 
-    if (['action', 'say'].includes(handlerType)) {
+    if (['action', 'say'].includes(handlerType) && !result.ignoreSubstitution) {
       value = value.map(item => this._renderSubstitution(item, messageData))
     }
 

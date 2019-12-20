@@ -48,6 +48,7 @@ export default async messageData => {
   const splitDocs = splitDocsForDiscord(docs)
 
   return {
+    ignoreSubstitution: true,
     embed: splitDocs.map((docsPage, index, array) => {
       const embedObject = {
         color: 'blue',
