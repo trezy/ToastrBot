@@ -9,9 +9,21 @@ hint: `{{defaultPrefix}}command [add|modify|remove] <command_name> <command_outp
 
 **`{{defaultPrefix}}command add`**
 
-This allows you to add a new command to the server. Here's an example of tthe simplest form of this command:
+This allows you to add a new command to the server. Here's an example of adding a simple command:
 ```{{defaultPrefix}}command add chickens I like chickens!```
 The result of this will be a new command — `{{defaultPrefix}}chickens` — that will cause ToastrBot to send a message to the channel saying, "I like chickens!"
+
+Custom commands can take arguments, too!
+```{{defaultPrefix}}command add chickens {{0}} likes chickens!```
+
+Note the special syntax: `{{0}}`. This will be replaced when the command is run with an argument:
+```{{defaultPrefix}}chickens Bob
+// output: Bob likes chickens!```
+
+Finally, these variables can have fallback values.
+```{{defaultPrefix}}command add chickens {{0 | Bob}} likes chickens!```
+
+Now, running the command with an argument still works, but if it *doesn't* receive an argument, it'll just use the default value of `Bob`!
 
 There is also a special keyword — `action` — that can be used to have ToastrBot send action messages. For example:
 ```{{defaultPrefix}}command add cluck action clucks. Bok bok bok...```
