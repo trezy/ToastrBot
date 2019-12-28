@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-private-methods": "^7.7.4",
+    "cheerio": "^1.0.0-rc.3",
     "colornames": "^1.1.1",
     "discord.io": "woor/discord.io#gateway_v6",
     "dotenv": "^8.2.0",
@@ -22,6 +23,7 @@
     "node-emoji": "^1.10.0",
     "sentiment": "^5.0.1",
     "sinon-chai": "^3.3.0",
+    "terminal-table": "^0.0.12",
     "twitch-js": "^1.2.17",
     "uuid": "^3.3.2",
     "winston": "^3.1.0",

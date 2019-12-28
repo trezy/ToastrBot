@@ -6,17 +6,18 @@ import path from 'path'
 
 
 
+// Local imports
+import getFilenamesByType from './getFilenamesByType'
+
+
+
+
+
 export default function (fileType, filePath) {
-  const fileExtension = fileType.replace(/^\./, '')
-  const fileRegex = new RegExp(`\.${fileExtension}$`)
+  const filenames = getFilenamesByType(fileType, filePath)
 
-  return fs.readdirSync(filePath).reduce((accumulator, filename) => {
-    if (fileRegex.test(filename)) {
-      const commandName = filename.replace(fileRegex, '')
-
-      accumulator[commandName] = require(path.resolve(filePath, filename)).default
-    }
-
-    return accumulator
-  }, {})
+  return filenames.reduce((accumulator, filename) => ({
+    ...accumulator,
+    [filename]: require(path.resolve(filePath, filename)).default,
+  }), {})
 }

@@ -1,7 +1,6 @@
 .env
 .DS_Store
 firebase-credentials.json
-yarn.lock
 dist/
 node_modules/
 logs/
