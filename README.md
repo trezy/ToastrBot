@@ -1,3 +1,3 @@
-# twitch-bot
+# ToastrBot
 
-This is a Twitch moderation bot (or, at least it will be!).
+ToastrBot is a Discord and Twitch bot for managing communities.
